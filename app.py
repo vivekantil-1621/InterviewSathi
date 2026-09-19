@@ -1702,8 +1702,8 @@ if page == "Home" and not st.session_state.interview_started:
                     scenario = INTERVIEW_SCENARIOS[scenario_key]
                     st.session_state.selected_area = scenario["area"]
                     st.session_state.selected_level = scenario["level"]
-                    st.session_state.number_of_questions = len(get_scenario_questions(title))
-                    st.session_state.selected_questions = get_scenario_questions(title)
+                    st.session_state.number_of_questions = len(get_scenario_questions(scenario_key))
+                    st.session_state.selected_questions = get_scenario_questions(scenario_key)
                     st.session_state.current_index = 0
                     st.session_state.answers = {}
                     st.session_state.evaluations = {}
