@@ -1635,8 +1635,8 @@ with st.sidebar:
 
     page = st.radio(
         "",
-        ["Home", "Interviews", "Performance", "Settings"],
-        index=["Home", "Interviews", "Performance", "Settings"].index(st.session_state.page),
+        ["Home", "Interviews", "Performance", "Analytics", "Settings"],
+        index=["Home", "Interviews", "Performance", "Analytics", "Settings"].index(st.session_state.page),
         label_visibility="collapsed"
     )
     st.session_state.page = page
@@ -1995,6 +1995,65 @@ elif page == "Interviews" and st.session_state.interview_completed:
         st.session_state.interviewer_reaction = ""
         st.session_state.page = "Home"
         st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------- ANALYTICS ----------
+elif page == "Analytics":
+    st.markdown('<div class="dashboard-shell">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Analytics</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-subtitle">Simple anonymous usage tracking for InterviewSathi.</div>', unsafe_allow_html=True)
+
+    admin_password = st.secrets.get("ADMIN_PASSWORD", "") if hasattr(st, "secrets") else ""
+    entered_password = st.text_input("Admin password", type="password")
+
+    if not admin_password:
+        st.warning("Set ADMIN_PASSWORD in Streamlit Secrets to enable this page.")
+    elif entered_password != admin_password:
+        st.info("Enter the admin password to view usage.")
+    else:
+        rows = []
+        if os.path.exists(TRACKING_FILE):
+            try:
+                with open(TRACKING_FILE, "r", newline="", encoding="utf-8") as f:
+                    rows = list(csv.DictReader(f))
+            except Exception:
+                rows = []
+
+        visitors = {r.get("visitor_id") for r in rows if r.get("visitor_id")}
+        started = [r for r in rows if r.get("event") == "interview_started"]
+        completed = [r for r in rows if r.get("event") == "interview_completed"]
+        last_activity = rows[-1].get("timestamp_utc", "") if rows else "No activity yet"
+
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            st.metric("Visitors", len(visitors))
+        with m2:
+            st.metric("Interviews Started", len(started))
+        with m3:
+            st.metric("Interviews Completed", len(completed))
+        with m4:
+            rate = round(len(completed) / len(started) * 100, 1) if started else 0
+            st.metric("Completion Rate", f"{rate}%")
+
+        st.caption(f"Last activity (UTC): {last_activity}")
+
+        if started:
+            st.subheader("Recent Interviews Started")
+            recent = []
+            for r in started[-10:][::-1]:
+                recent.append({
+                    "Time (UTC)": r.get("timestamp_utc", ""),
+                    "Level": r.get("level", ""),
+                    "Area": r.get("area", ""),
+                    "Interview": r.get("scenario", ""),
+                    "Questions": r.get("questions", ""),
+                })
+            st.dataframe(recent, use_container_width=True, hide_index=True)
+        else:
+            st.info("No interviews have been started yet.")
+
+        st.caption("Tracking is anonymous; no visitor names are collected.")
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- PERFORMANCE ----------
