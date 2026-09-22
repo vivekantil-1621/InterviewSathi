@@ -2,6 +2,10 @@ import streamlit as st
 import random
 import re
 import json
+import os
+import csv
+import uuid
+from datetime import datetime, timezone
 from google import genai
 from streamlit_mic_recorder import speech_to_text
 
@@ -1472,30 +1476,6 @@ def get_scenario_questions(scenario_name):
 
 
 # =========================================================
-# SESSION STATE
-# =========================================================
-
-defaults = {
-    "interview_started": False,
-    "interview_completed": False,
-    "selected_questions": [],
-    "current_index": 0,
-    "answers": {},
-    "evaluations": {},
-    "answer_submitted": False,
-    "selected_area": "Equity Valuation",
-    "selected_level": "Associate",
-    "number_of_questions": 5,
-    "voice_text_box_version": {},
-    "selected_scenario": "Equity Valuation — Fundamentals",
-}
-
-for key, value in defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
-
-
-# =========================================================
 # =========================================================
 # INTERVIEW SATHI DASHBOARD + INTERVIEW EXPERIENCE
 # =========================================================
@@ -1597,6 +1577,28 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ---------- ANONYMOUS USAGE TRACKING ----------
+TRACKING_FILE = "usage_events.csv"
+
+def get_visitor_id():
+    if "visitor_id" not in st.session_state:
+        st.session_state.visitor_id = str(uuid.uuid4())
+    return st.session_state.visitor_id
+
+def track_event(event_name, **details):
+    try:
+        row = {"timestamp_utc": datetime.now(timezone.utc).isoformat(), "visitor_id": get_visitor_id(), "event": event_name, **details}
+        file_exists = os.path.exists(TRACKING_FILE)
+        with open(TRACKING_FILE, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=row.keys())
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(row)
+    except Exception:
+        pass
+
+get_visitor_id()
+
 # ---------- SESSION STATE ----------
 defaults = {
     "interview_started": False,
@@ -1613,10 +1615,18 @@ defaults = {
     "selected_scenario": "Equity Valuation — Fundamentals",
     "page": "Home",
     "history": [],
+    "usage_started_tracked": False,
+    "usage_completed_tracked": False,
 }
 for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
+
+# Track one anonymous app-open event per browser session.
+# Keep this AFTER session-state initialization so the key always exists.
+if not st.session_state.usage_started_tracked:
+    track_event("app_opened")
+    st.session_state.usage_started_tracked = True
 
 # ---------- SIDEBAR NAVIGATION ----------
 with st.sidebar:
@@ -1711,6 +1721,7 @@ if page == "Home" and not st.session_state.interview_started:
                     st.session_state.interviewer_reaction = ""
                     st.session_state.interview_started = True
                     st.session_state.interview_completed = False
+                    st.session_state.usage_completed_tracked = False
                     st.session_state.voice_text_box_version = {}
                     st.session_state.page = "Interviews"
                     st.rerun()
@@ -1761,6 +1772,14 @@ elif page == "Interviews" and not st.session_state.interview_started:
         st.session_state.interviewer_reaction = ""
         st.session_state.interview_started = True
         st.session_state.interview_completed = False
+        st.session_state.usage_completed_tracked = False
+        track_event(
+            "interview_started",
+            scenario=st.session_state.selected_scenario,
+            area=st.session_state.selected_area,
+            level=st.session_state.selected_level,
+            questions=st.session_state.number_of_questions,
+        )
         st.session_state.voice_text_box_version = {}
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -1864,6 +1883,12 @@ elif page == "Interviews" and st.session_state.interview_started and not st.sess
                     "ai_evaluation": ai_result,
                 }
                 st.session_state.answer_submitted = True
+                track_event(
+                    "answer_submitted",
+                    scenario=st.session_state.selected_scenario,
+                    question_number=current_index + 1,
+                    questions_total=total_questions,
+                )
                 st.rerun()
     else:
         evaluation = st.session_state.evaluations[current_index]
@@ -1883,6 +1908,15 @@ elif page == "Interviews" and st.session_state.interview_started and not st.sess
             st.success("You have completed all interview questions.")
             if st.button("🏁 Finish & See Interviewer Report", use_container_width=True, type="primary"):
                 st.session_state.interview_completed = True
+                if not st.session_state.usage_completed_tracked:
+                    track_event(
+                        "interview_completed",
+                        scenario=st.session_state.selected_scenario,
+                        area=st.session_state.selected_area,
+                        level=st.session_state.selected_level,
+                        questions=len(st.session_state.evaluations),
+                    )
+                    st.session_state.usage_completed_tracked = True
                 scores = [x["score"] for x in st.session_state.evaluations.values()]
                 overall = round(sum(scores) / len(scores), 1) if scores else 0
                 st.session_state.history.append({
