@@ -1362,8 +1362,6 @@ Requirements:
 
     except Exception as e:
 
-        # Technical details stay in the server console.
-        # They are NOT shown to candidates.
         print(
             "AI evaluation error:",
             str(e)
@@ -1375,10 +1373,9 @@ Requirements:
 # =========================================================
 # INTERVIEW SCENARIOS
 # =========================================================
-# Curated sequences make the experience feel like an interview rather than
-# a random question bank. The existing question bank remains the source of truth.
 
 INTERVIEW_SCENARIOS = {
+
     "Equity Valuation — Fundamentals": {
         "area": "Equity Valuation",
         "level": "Associate",
@@ -1509,15 +1506,29 @@ INTERVIEW_SCENARIOS = {
 def get_scenario_questions(scenario_name):
 
     scenario = INTERVIEW_SCENARIOS[scenario_name]
-    bank_questions = QUESTION_BANK[scenario["area"]][scenario["level"]]
-    questions = []
-    topics = scenario.get("topics", [])
 
-    for pos, bank_index in enumerate(scenario["questions"]):
+    bank_questions = QUESTION_BANK[
+        scenario["area"]
+    ][
+        scenario["level"]
+    ]
+
+    questions = []
+
+    topics = scenario.get(
+        "topics",
+        []
+    )
+
+    for pos, bank_index in enumerate(
+        scenario["questions"]
+    ):
 
         if bank_index < len(bank_questions):
 
-            q = dict(bank_questions[bank_index])
+            q = dict(
+                bank_questions[bank_index]
+            )
 
             q["topic"] = (
                 topics[pos]
@@ -1525,7 +1536,9 @@ def get_scenario_questions(scenario_name):
                 else "technical valuation"
             )
 
-            q["base_question"] = q["question"]
+            q["base_question"] = q[
+                "question"
+            ]
 
             questions.append(q)
 
@@ -1536,304 +1549,316 @@ def get_scenario_questions(scenario_name):
 # INTERVIEW SATHI DASHBOARD + INTERVIEW EXPERIENCE
 # =========================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-/* ---------- GLOBAL ---------- */
+    .block-container {
+        padding-top: 1.2rem;
+        padding-bottom: 3rem;
+    }
 
-.block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 3rem;
-}
+    .dashboard-shell {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
 
+    .hero-dashboard {
+        background: linear-gradient(
+            135deg,
+            #eef4ff 0%,
+            #f6f0ff 100%
+        );
+        border: 1px solid #dfe7f5;
+        border-radius: 24px;
+        padding: 30px 34px;
+        margin-bottom: 22px;
+    }
 
-/* ---------- DASHBOARD ---------- */
+    .hero-kicker {
+        color: #6366f1;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .12em;
+    }
 
-.dashboard-shell {
-    max-width: 1250px;
-    margin: 0 auto;
-}
+    .hero-title {
+        color: #111827;
+        font-size: 38px;
+        line-height: 1.08;
+        font-weight: 850;
+        margin-top: 5px;
+    }
 
-.hero-dashboard {
-    background: linear-gradient(135deg, #eef4ff 0%, #f6f0ff 100%);
-    border: 1px solid #dfe7f5;
-    border-radius: 24px;
-    padding: 30px 34px;
-    margin-bottom: 22px;
-}
+    .hero-subtitle {
+        color: #475569;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-top: 10px;
+        max-width: 760px;
+    }
 
-.hero-kicker {
-    color:#6366f1;
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:.12em;
-}
+    .pill-row {
+        margin-top: 18px;
+    }
 
-.hero-title {
-    color:#111827;
-    font-size:38px;
-    line-height:1.08;
-    font-weight:850;
-    margin-top:5px;
-}
+    .pill {
+        display: inline-block;
+        background: white;
+        border: 1px solid #dbe3f0;
+        border-radius: 999px;
+        padding: 7px 12px;
+        margin: 3px 5px 3px 0;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 700;
+    }
 
-.hero-subtitle {
-    color:#475569;
-    font-size:16px;
-    line-height:1.6;
-    margin-top:10px;
-    max-width:760px;
-}
+    .section-title {
+        color: #0f172a;
+        font-size: 23px;
+        font-weight: 800;
+        margin: 18px 0 5px;
+    }
 
-.pill-row {
-    margin-top:18px;
-}
+    .section-subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 14px;
+    }
 
-.pill {
-    display:inline-block;
-    background:white;
-    border:1px solid #dbe3f0;
-    border-radius:999px;
-    padding:7px 12px;
-    margin:3px 5px 3px 0;
-    color:#334155;
-    font-size:12px;
-    font-weight:700;
-}
+    .metric-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 17px 18px;
+        min-height: 105px;
+        box-shadow: 0 4px 14px rgba(15,23,42,.04);
+    }
 
-.section-title {
-    color:#0f172a;
-    font-size:23px;
-    font-weight:800;
-    margin:18px 0 5px;
-}
+    .metric-label {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+    }
 
-.section-subtitle {
-    color:#64748b;
-    font-size:14px;
-    margin-bottom:14px;
-}
+    .metric-value {
+        color: #111827;
+        font-size: 27px;
+        font-weight: 850;
+        margin-top: 5px;
+    }
 
-.metric-card {
-    background:white;
-    border:1px solid #e2e8f0;
-    border-radius:16px;
-    padding:17px 18px;
-    min-height:105px;
-    box-shadow:0 4px 14px rgba(15,23,42,.04);
-}
+    .metric-note {
+        color: #94a3b8;
+        font-size: 11px;
+        margin-top: 3px;
+    }
 
-.metric-label {
-    color:#64748b;
-    font-size:12px;
-    font-weight:700;
-}
+    .case-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin: 12px 0 18px;
+        line-height: 1.55;
+    }
 
-.metric-value {
-    color:#111827;
-    font-size:27px;
-    font-weight:850;
-    margin-top:5px;
-}
+    .interview-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 19px;
+        min-height: 205px;
+        box-shadow: 0 4px 14px rgba(15,23,42,.04);
+    }
 
-.metric-note {
-    color:#94a3b8;
-    font-size:11px;
-    margin-top:3px;
-}
+    .card-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #eef2ff;
+        font-size: 21px;
+        margin-bottom: 12px;
+    }
 
-.case-card {
-    background:#f8fafc;
-    border:1px solid #e2e8f0;
-    border-radius:16px;
-    padding:20px 22px;
-    margin:12px 0 18px;
-    line-height:1.55;
-}
+    .card-title {
+        color: #111827;
+        font-size: 17px;
+        font-weight: 800;
+    }
 
-.interview-card {
-    background:#fff;
-    border:1px solid #e2e8f0;
-    border-radius:18px;
-    padding:19px;
-    min-height:205px;
-    box-shadow:0 4px 14px rgba(15,23,42,.04);
-}
+    .card-meta {
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 5px;
+    }
 
-.card-icon {
-    width:42px;
-    height:42px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:12px;
-    background:#eef2ff;
-    font-size:21px;
-    margin-bottom:12px;
-}
+    .card-desc {
+        color: #475569;
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 12px 0 13px;
+    }
 
-.card-title {
-    color:#111827;
-    font-size:17px;
-    font-weight:800;
-}
+    .recent-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 16px;
+    }
 
-.card-meta {
-    color:#64748b;
-    font-size:12px;
-    margin-top:5px;
-}
+    .quote-card {
+        background: linear-gradient(
+            135deg,
+            #111827,
+            #312e81
+        );
+        color: white;
+        border-radius: 18px;
+        padding: 20px;
+        min-height: 140px;
+    }
 
-.card-desc {
-    color:#475569;
-    font-size:13px;
-    line-height:1.45;
-    margin:12px 0 13px;
-}
+    .quote-text {
+        font-size: 16px;
+        line-height: 1.55;
+        font-weight: 650;
+    }
 
-.recent-card {
-    background:#f8fafc;
-    border:1px solid #e2e8f0;
-    border-radius:16px;
-    padding:16px;
-}
+    .quote-small {
+        color: #cbd5e1;
+        font-size: 12px;
+        margin-top: 12px;
+    }
 
-.quote-card {
-    background:linear-gradient(135deg,#111827,#312e81);
-    color:white;
-    border-radius:18px;
-    padding:20px;
-    min-height:140px;
-}
+    .interview-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
 
-.quote-text {
-    font-size:16px;
-    line-height:1.55;
-    font-weight:650;
-}
+    .interviewer-card {
+        background: linear-gradient(
+            135deg,
+            #111827 0%,
+            #1e293b 100%
+        );
+        color: white;
+        border-radius: 18px;
+        padding: 22px 26px;
+        margin: 8px 0 18px;
+        border: 1px solid #334155;
+    }
 
-.quote-small {
-    color:#cbd5e1;
-    font-size:12px;
-    margin-top:12px;
-}
+    .interviewer-avatar {
+        display: inline-flex;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        background: #334155;
+        font-size: 23px;
+        margin-right: 12px;
+        vertical-align: middle;
+    }
 
+    .interviewer-name {
+        font-size: 19px;
+        font-weight: 750;
+    }
 
-/* ---------- INTERVIEW ROOM ---------- */
+    .interviewer-role {
+        color: #cbd5e1;
+        font-size: 13px;
+    }
 
-.interview-shell {
-    max-width: 1100px;
-    margin: 0 auto;
-}
+    .interviewer-note {
+        color: #e2e8f0;
+        font-size: 15px;
+        margin-top: 12px;
+        line-height: 1.55;
+    }
 
-.interviewer-card {
-    background:linear-gradient(135deg,#111827 0%,#1e293b 100%);
-    color:white;
-    border-radius:18px;
-    padding:22px 26px;
-    margin:8px 0 18px;
-    border:1px solid #334155;
-}
+    .question-card {
+        background: linear-gradient(
+            135deg,
+            #eef4ff 0%,
+            #f7f3ff 100%
+        );
+        border: 1px solid #dbe4ff;
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 12px 0 20px;
+    }
 
-.interviewer-avatar {
-    display:inline-flex;
-    width:46px;
-    height:46px;
-    border-radius:50%;
-    align-items:center;
-    justify-content:center;
-    background:#334155;
-    font-size:23px;
-    margin-right:12px;
-    vertical-align:middle;
-}
+    .question-label {
+        color: #6366f1;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
 
-.interviewer-name {
-    font-size:19px;
-    font-weight:750;
-}
+    .question-text {
+        color: #0f172a;
+        font-size: 25px;
+        line-height: 1.35;
+        font-weight: 700;
+        margin-top: 8px;
+    }
 
-.interviewer-role {
-    color:#cbd5e1;
-    font-size:13px;
-}
+    .reaction-card {
+        background: #f8fafc;
+        border-left: 4px solid #6366f1;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 15px 0;
+    }
 
-.interviewer-note {
-    color:#e2e8f0;
-    font-size:15px;
-    margin-top:12px;
-    line-height:1.55;
-}
+    .score-pill {
+        font-size: 28px;
+        font-weight: 800;
+        color: #312e81;
+    }
 
-.question-card {
-    background:linear-gradient(135deg,#eef4ff 0%,#f7f3ff 100%);
-    border:1px solid #dbe4ff;
-    border-radius:18px;
-    padding:24px 26px;
-    margin:12px 0 20px;
-}
+    .final-card {
+        background: linear-gradient(
+            135deg,
+            #eef4ff 0%,
+            #faf5ff 100%
+        );
+        border: 1px solid #dbe4ff;
+        border-radius: 18px;
+        padding: 24px;
+    }
 
-.question-label {
-    color:#6366f1;
-    font-size:13px;
-    font-weight:800;
-    letter-spacing:.05em;
-    text-transform:uppercase;
-}
+    .small-muted {
+        color: #64748b;
+        font-size: 13px;
+    }
 
-.question-text {
-    color:#0f172a;
-    font-size:25px;
-    line-height:1.35;
-    font-weight:700;
-    margin-top:8px;
-}
+    .sidebar-brand {
+        font-size: 22px;
+        font-weight: 850;
+        color: #172554;
+        margin-bottom: 3px;
+    }
 
-.reaction-card {
-    background:#f8fafc;
-    border-left:4px solid #6366f1;
-    border-radius:10px;
-    padding:14px 18px;
-    margin:15px 0;
-}
+    .sidebar-tag {
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.45;
+        margin-bottom: 16px;
+    }
 
-.score-pill {
-    font-size:28px;
-    font-weight:800;
-    color:#312e81;
-}
-
-.final-card {
-    background:linear-gradient(135deg,#eef4ff 0%,#faf5ff 100%);
-    border:1px solid #dbe4ff;
-    border-radius:18px;
-    padding:24px;
-}
-
-.small-muted {
-    color:#64748b;
-    font-size:13px;
-}
-
-
-/* ---------- SIDEBAR ---------- */
-
-.sidebar-brand {
-    font-size:22px;
-    font-weight:850;
-    color:#172554;
-    margin-bottom:3px;
-}
-
-.sidebar-tag {
-    color:#64748b;
-    font-size:11px;
-    line-height:1.45;
-    margin-bottom:16px;
-}
-
-</style>
-""", unsafe_allow_html=True)
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # =========================================================
@@ -1846,23 +1871,35 @@ TRACKING_FILE = "usage_events.csv"
 def get_visitor_id():
 
     if "visitor_id" not in st.session_state:
-        st.session_state.visitor_id = str(uuid.uuid4())
+        st.session_state.visitor_id = str(
+            uuid.uuid4()
+        )
 
     return st.session_state.visitor_id
 
 
-def track_event(event_name, **details):
+def track_event(
+    event_name,
+    **details
+):
 
     try:
 
         row = {
-            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "timestamp_utc": datetime.now(
+                timezone.utc
+            ).isoformat(),
+
             "visitor_id": get_visitor_id(),
+
             "event": event_name,
+
             **details
         }
 
-        file_exists = os.path.exists(TRACKING_FILE)
+        file_exists = os.path.exists(
+            TRACKING_FILE
+        )
 
         with open(
             TRACKING_FILE,
@@ -1946,6 +1983,7 @@ defaults = {
 for key, value in defaults.items():
 
     if key not in st.session_state:
+
         st.session_state[key] = value
 
 
@@ -1953,12 +1991,11 @@ for key, value in defaults.items():
 # APP OPEN TRACKING
 # =========================================================
 
-# Track one anonymous app-open event per browser session.
-# Keep this AFTER session-state initialization so the key always exists.
-
 if not st.session_state.usage_started_tracked:
 
-    track_event("app_opened")
+    track_event(
+        "app_opened"
+    )
 
     st.session_state.usage_started_tracked = True
 
@@ -1994,7 +2031,9 @@ with st.sidebar:
             "Performance",
             "Analytics",
             "Settings"
-        ].index(st.session_state.page),
+        ].index(
+            st.session_state.page
+        ),
         label_visibility="collapsed"
     )
 
@@ -2027,7 +2066,10 @@ scenario_names = list(
 # HOME DASHBOARD
 # =========================================================
 
-if page == "Home" and not st.session_state.interview_started:
+if (
+    page == "Home"
+    and not st.session_state.interview_started
+):
 
     history = st.session_state.history
 
@@ -2035,21 +2077,31 @@ if page == "Home" and not st.session_state.interview_started:
 
     avg_score = (
         round(
-            sum(x["score"] for x in history) / completed,
+            sum(
+                x["score"]
+                for x in history
+            ) / completed,
             1
         )
         if completed
         else 0
     )
 
+
     st.markdown(
         '<div class="dashboard-shell">',
         unsafe_allow_html=True
     )
 
+
+    # =====================================================
+    # HERO
+    # =====================================================
+
     st.markdown(
         """
         <div class="hero-dashboard">
+
             <div class="hero-kicker">
                 YOUR VALUATION INTERVIEW PARTNER
             </div>
@@ -2069,11 +2121,16 @@ if page == "Home" and not st.session_state.interview_started:
                 <span class="pill">PPA</span>
                 <span class="pill">Case Studies</span>
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
 
+
+    # =====================================================
+    # PROGRESS
+    # =====================================================
 
     st.markdown(
         '<div class="section-title">Your Progress</div>',
@@ -2097,9 +2154,11 @@ if page == "Home" and not st.session_state.interview_started:
                 <div class="metric-label">
                     TOTAL INTERVIEWS
                 </div>
+
                 <div class="metric-value">
                     {completed}
                 </div>
+
                 <div class="metric-note">
                     Completed sessions
                 </div>
@@ -2117,9 +2176,11 @@ if page == "Home" and not st.session_state.interview_started:
                 <div class="metric-label">
                     AVERAGE SCORE
                 </div>
+
                 <div class="metric-value">
                     {avg_score}/10
                 </div>
+
                 <div class="metric-note">
                     Across completed interviews
                 </div>
@@ -2137,9 +2198,11 @@ if page == "Home" and not st.session_state.interview_started:
                 <div class="metric-label">
                     TOPIC AREAS
                 </div>
+
                 <div class="metric-value">
                     4
                 </div>
+
                 <div class="metric-note">
                     Core valuation areas
                 </div>
@@ -2163,9 +2226,11 @@ if page == "Home" and not st.session_state.interview_started:
                 <div class="metric-label">
                     STRONG SESSIONS
                 </div>
+
                 <div class="metric-value">
                     {strong}
                 </div>
+
                 <div class="metric-note">
                     Score ≥ 7/10
                 </div>
@@ -2174,6 +2239,10 @@ if page == "Home" and not st.session_state.interview_started:
             unsafe_allow_html=True
         )
 
+
+    # =====================================================
+    # START INTERVIEW
+    # =====================================================
 
     st.markdown(
         '<div class="section-title">Start Your Interview</div>',
@@ -2229,7 +2298,6 @@ if page == "Home" and not st.session_state.interview_started:
             "Assistant Manager",
             "Handle startup valuation, VC method and scenario-based thinking."
         ),
-
     ]
 
 
@@ -2257,6 +2325,7 @@ if page == "Home" and not st.session_state.interview_started:
                 st.markdown(
                     f'''
                     <div class="interview-card">
+
                         <div class="card-icon">
                             {icon}
                         </div>
@@ -2272,6 +2341,7 @@ if page == "Home" and not st.session_state.interview_started:
                         <div class="card-desc">
                             {desc}
                         </div>
+
                     </div>
                     ''',
                     unsafe_allow_html=True
@@ -2290,31 +2360,41 @@ if page == "Home" and not st.session_state.interview_started:
 
                     if title == "Case Studies — Portfolio":
 
-                        scenario_key = "Portfolio Valuation — Senior"
+                        scenario_key = (
+                            "Portfolio Valuation — Senior"
+                        )
 
 
                     if title == "Case Studies — Startup":
 
-                        scenario_key = "Startup Valuation — Manager Case"
+                        scenario_key = (
+                            "Startup Valuation — Manager Case"
+                        )
 
 
-                    st.session_state.selected_scenario = scenario_key
+                    st.session_state.selected_scenario = (
+                        scenario_key
+                    )
+
 
                     scenario = INTERVIEW_SCENARIOS[
                         scenario_key
                     ]
 
-                    st.session_state.selected_area = scenario[
-                        "area"
-                    ]
 
-                    st.session_state.selected_level = scenario[
-                        "level"
-                    ]
+                    st.session_state.selected_area = (
+                        scenario["area"]
+                    )
 
-                    st.session_state.number_of_questions = len(
-                        get_scenario_questions(
-                            scenario_key
+                    st.session_state.selected_level = (
+                        scenario["level"]
+                    )
+
+                    st.session_state.number_of_questions = (
+                        len(
+                            get_scenario_questions(
+                                scenario_key
+                            )
                         )
                     )
 
@@ -2344,12 +2424,17 @@ if page == "Home" and not st.session_state.interview_started:
 
                     st.session_state.page = "Interviews"
 
-                    # FIX:
-                    # Track interview starts from the Home dashboard too.
+
+                    # Track Home dashboard starts.
                     track_interview_started()
+
 
                     st.rerun()
 
+
+    # =====================================================
+    # RECENT ACTIVITY
+    # =====================================================
 
     left, right = st.columns(
         [1.2, 1]
@@ -2403,6 +2488,7 @@ if page == "Home" and not st.session_state.interview_started:
         st.markdown(
             '''
             <div class="quote-card">
+
                 <div class="quote-text">
                     “A strong valuation interview is not about memorising formulas.
                     It is about explaining why your approach makes sense.”
@@ -2411,6 +2497,7 @@ if page == "Home" and not st.session_state.interview_started:
                 <div class="quote-small">
                     InterviewSathi · Technical Practice
                 </div>
+
             </div>
             ''',
             unsafe_allow_html=True
@@ -2427,7 +2514,10 @@ if page == "Home" and not st.session_state.interview_started:
 # INTERVIEWS PAGE
 # =========================================================
 
-elif page == "Interviews" and not st.session_state.interview_started:
+elif (
+    page == "Interviews"
+    and not st.session_state.interview_started
+):
 
     st.markdown(
         '<div class="dashboard-shell">',
@@ -2452,7 +2542,8 @@ elif page == "Interviews" and not st.session_state.interview_started:
             scenario_names.index(
                 st.session_state.selected_scenario
             )
-            if st.session_state.selected_scenario in scenario_names
+            if st.session_state.selected_scenario
+            in scenario_names
             else 0
         )
     )
@@ -2500,6 +2591,7 @@ elif page == "Interviews" and not st.session_state.interview_started:
     st.markdown(
         f'''
         <div class="case-card">
+
             <b>👤 {scenario["interviewer"]}</b>
             · {scenario["interviewer_title"]}
 
@@ -2513,6 +2605,7 @@ elif page == "Interviews" and not st.session_state.interview_started:
                 Connected sequence:
                 {" → ".join(scenario.get("topics", []))}
             </span>
+
         </div>
         ''',
         unsafe_allow_html=True
@@ -2525,17 +2618,21 @@ elif page == "Interviews" and not st.session_state.interview_started:
         type="primary"
     ):
 
-        st.session_state.selected_scenario = selected_scenario
+        st.session_state.selected_scenario = (
+            selected_scenario
+        )
 
-        st.session_state.selected_area = scenario[
-            "area"
-        ]
+        st.session_state.selected_area = (
+            scenario["area"]
+        )
 
-        st.session_state.selected_level = scenario[
-            "level"
-        ]
+        st.session_state.selected_level = (
+            scenario["level"]
+        )
 
-        st.session_state.number_of_questions = q_count
+        st.session_state.number_of_questions = (
+            q_count
+        )
 
         st.session_state.selected_questions = (
             get_scenario_questions(
@@ -2559,9 +2656,10 @@ elif page == "Interviews" and not st.session_state.interview_started:
 
         st.session_state.usage_completed_tracked = False
 
-        # FIX:
-        # Use the same tracking function for starts from the Interviews page.
+
+        # Track interview starts from Interviews page.
         track_interview_started()
+
 
         st.session_state.voice_text_box_version = {}
 
@@ -2584,9 +2682,13 @@ elif (
     and not st.session_state.interview_completed
 ):
 
-    questions = st.session_state.selected_questions
+    questions = (
+        st.session_state.selected_questions
+    )
 
-    current_index = st.session_state.current_index
+    current_index = (
+        st.session_state.current_index
+    )
 
     total_questions = len(
         questions
@@ -2608,7 +2710,8 @@ elif (
 
 
     st.progress(
-        (current_index + 1) / total_questions,
+        (current_index + 1)
+        / total_questions,
         text=(
             f"Question {current_index + 1} "
             f"of {total_questions} · "
@@ -2668,7 +2771,10 @@ elif (
 
             <div class="question-label">
                 Technical Question ·
-                {current_question.get('topic','Valuation')}
+                {current_question.get(
+                    'topic',
+                    'Valuation'
+                )}
             </div>
 
             <div class="question-text">
@@ -2779,15 +2885,18 @@ elif (
                 )
 
 
-                rule_score = rule_evaluation[
-                    "score"
-                ]
+                rule_score = (
+                    rule_evaluation["score"]
+                )
 
 
                 next_topic = None
 
 
-                if current_index < total_questions - 1:
+                if (
+                    current_index
+                    < total_questions - 1
+                ):
 
                     next_topic = questions[
                         current_index + 1
@@ -2798,15 +2907,17 @@ elif (
                     "🤖 Interviewer is evaluating your answer..."
                 ):
 
-                    ai_result = evaluate_with_gemini(
-                        question=current_question[
-                            "question"
-                        ],
-                        answer=current_answer,
-                        level=st.session_state.selected_level,
-                        area=st.session_state.selected_area,
-                        rule_score=rule_score,
-                        next_topic=next_topic
+                    ai_result = (
+                        evaluate_with_gemini(
+                            question=current_question[
+                                "question"
+                            ],
+                            answer=current_answer,
+                            level=st.session_state.selected_level,
+                            area=st.session_state.selected_area,
+                            rule_score=rule_score,
+                            next_topic=next_topic
+                        )
                     )
 
 
@@ -2840,7 +2951,8 @@ elif (
 
                     if (
                         generated_next
-                        and current_index < total_questions - 1
+                        and current_index
+                        < total_questions - 1
                     ):
 
                         next_q = dict(
@@ -2849,7 +2961,9 @@ elif (
                             ]
                         )
 
-                        next_q["question"] = generated_next
+                        next_q["question"] = (
+                            generated_next
+                        )
 
                         st.session_state.selected_questions[
                             current_index + 1
@@ -2909,9 +3023,11 @@ elif (
 
     else:
 
-        evaluation = st.session_state.evaluations[
-            current_index
-        ]
+        evaluation = (
+            st.session_state.evaluations[
+                current_index
+            ]
+        )
 
         score = evaluation[
             "score"
@@ -2969,7 +3085,10 @@ elif (
         )
 
 
-        if current_index < total_questions - 1:
+        if (
+            current_index
+            < total_questions - 1
+        ):
 
             if st.button(
                 "➡️ Continue Interview",
@@ -3019,13 +3138,15 @@ elif (
 
                 scores = [
                     x["score"]
-                    for x in st.session_state.evaluations.values()
+                    for x
+                    in st.session_state.evaluations.values()
                 ]
 
 
                 overall = (
                     round(
-                        sum(scores) / len(scores),
+                        sum(scores)
+                        / len(scores),
                         1
                     )
                     if scores
@@ -3095,7 +3216,8 @@ elif (
 
 
         overall_score = round(
-            sum(scores) / len(scores),
+            sum(scores)
+            / len(scores),
             1
         )
 
@@ -3649,13 +3771,20 @@ elif page == "Performance":
             st.markdown(
                 f"""
                 <div class='recent-card'>
-                    <b>{item['scenario']}</b>
+
+                    <b>
+                        {item['scenario']}
+                    </b>
+
                     <br>
+
                     <span class='small-muted'>
                         {item['questions']} questions ·
                         Score {item['score']}/10
                     </span>
+
                 </div>
+
                 <br>
                 """,
                 unsafe_allow_html=True
