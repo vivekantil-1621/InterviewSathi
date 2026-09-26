@@ -1240,13 +1240,16 @@ ALIASES = {
 # =========================================================
 
 def concept_found(answer, keyword):
+
     answer_lower = answer.lower()
 
     if keyword.lower() in answer_lower:
         return True
 
     if keyword in ALIASES:
+
         for alias in ALIASES[keyword]:
+
             if alias.lower() in answer_lower:
                 return True
 
@@ -1262,6 +1265,7 @@ def evaluate_answer(question_data, answer):
     answer = answer.strip()
 
     if not answer:
+
         return {
             "score": 0,
             "feedback": "No answer provided.",
@@ -1277,8 +1281,10 @@ def evaluate_answer(question_data, answer):
     missing = []
 
     for keyword in keywords:
+
         if concept_found(answer, keyword):
             matched.append(keyword)
+
         else:
             missing.append(keyword)
 
@@ -1304,7 +1310,7 @@ def evaluate_answer(question_data, answer):
     final_score = (
         keyword_score * 7
         + length_score * 2
-        + structure_score * 1
+        + structure_score
     )
 
     final_score = round(
@@ -1646,7 +1652,10 @@ Do not mention any AI model, provider, API or software name
             return None
 
         try:
-            result["score"] = float(result["score"])
+            result["score"] = float(
+                result["score"]
+            )
+
         except Exception:
             return None
 
@@ -1677,22 +1686,23 @@ Do not mention any AI model, provider, API or software name
 # INTERVIEW SCENARIOS
 # =========================================================
 
-# Curated sequences make the experience feel like an interview
-# rather than a random question bank.
-
 INTERVIEW_SCENARIOS = {
 
     "Equity Valuation — Fundamentals": {
+
         "area": "Equity Valuation",
         "level": "Associate",
         "interviewer": "Sarah",
         "interviewer_title": "Senior Valuation Manager",
+
         "intro": (
             "You are interviewing for a valuation role. We will start "
             "with fundamentals and gradually move into practical "
             "valuation judgment."
         ),
+
         "questions": [1, 9, 2, 5, 6],
+
         "topics": [
             "valuation approaches",
             "Enterprise Value versus Equity Value",
@@ -1703,15 +1713,19 @@ INTERVIEW_SCENARIOS = {
     },
 
     "Equity Valuation — Private Company": {
+
         "area": "Equity Valuation",
         "level": "Senior Associate",
         "interviewer": "Sarah",
         "interviewer_title": "Senior Valuation Manager",
+
         "intro": (
             "Let's discuss a private company valuation. I will start "
             "with methodology and then probe your assumptions and judgment."
         ),
+
         "questions": [0, 1, 2, 3, 6],
+
         "topics": [
             "DCF process",
             "private-company WACC",
@@ -1722,16 +1736,20 @@ INTERVIEW_SCENARIOS = {
     },
 
     "Equity Valuation — Manager Case": {
+
         "area": "Equity Valuation",
         "level": "Assistant Manager",
         "interviewer": "David",
         "interviewer_title": "Valuation Director",
+
         "intro": (
             "Assume you are leading a private-company valuation with "
             "limited information. I am interested in how you structure "
             "the problem and defend your judgment."
         ),
+
         "questions": [0, 1, 2, 3, 4],
+
         "topics": [
             "private-company valuation approach",
             "margin versus peers",
@@ -1742,16 +1760,20 @@ INTERVIEW_SCENARIOS = {
     },
 
     "Equity Allocation — Capital Structure": {
+
         "area": "Equity Allocation",
         "level": "Senior Associate",
         "interviewer": "Michael",
         "interviewer_title": "Valuation Director",
+
         "intro": (
             "We are valuing a company with preferred and common equity. "
             "We will move from the allocation framework into OPM assumptions "
             "and conversion rights."
         ),
+
         "questions": [0, 1, 3, 4, 2],
+
         "topics": [
             "OPM allocation",
             "OPM inputs",
@@ -1762,16 +1784,20 @@ INTERVIEW_SCENARIOS = {
     },
 
     "PPA — Intangible Assets": {
+
         "area": "PPA",
         "level": "Senior Associate",
         "interviewer": "Priya",
         "interviewer_title": "PPA Senior Manager",
+
         "intro": (
             "Assume we have completed an acquisition and identified "
             "Customer Relationships, Developed Technology and Trade Name. "
             "Let's work through the valuation logic."
         ),
+
         "questions": [0, 1, 2, 3, 4],
+
         "topics": [
             "PPA fundamentals",
             "major intangible assets",
@@ -1782,16 +1808,20 @@ INTERVIEW_SCENARIOS = {
     },
 
     "PPA — Acquisition Case": {
+
         "area": "PPA",
         "level": "Assistant Manager",
         "interviewer": "Priya",
         "interviewer_title": "PPA Senior Manager",
+
         "intro": (
             "You are leading the PPA for an acquisition with significant "
             "intangible assets. I will test both methodology and the "
             "assumptions behind your valuation."
         ),
+
         "questions": [0, 1, 2, 3],
+
         "topics": [
             "PPA acquisition approach",
             "customer relationship attrition",
@@ -1801,16 +1831,20 @@ INTERVIEW_SCENARIOS = {
     },
 
     "Portfolio Valuation — Senior": {
+
         "area": "Case Studies",
         "level": "Senior Associate",
         "interviewer": "Alex",
         "interviewer_title": "Portfolio Valuation Director",
+
         "intro": (
             "You have been asked to support a portfolio valuation engagement. "
             "We will move from engagement planning into individual valuation "
             "judgments."
         ),
+
         "questions": [0, 1, 2, 3],
+
         "topics": [
             "portfolio valuation engagement process",
             "startup information and valuation approach",
@@ -1820,15 +1854,19 @@ INTERVIEW_SCENARIOS = {
     },
 
     "Startup Valuation — Manager Case": {
+
         "area": "Case Studies",
         "level": "Assistant Manager",
         "interviewer": "Alex",
         "interviewer_title": "Portfolio Valuation Director",
+
         "intro": (
             "Let's work through a startup valuation where historical "
             "earnings are limited and multiple future outcomes are possible."
         ),
+
         "questions": [1, 3, 2, 0],
+
         "topics": [
             "startup information request",
             "venture capital method",
@@ -1841,7 +1879,9 @@ INTERVIEW_SCENARIOS = {
 
 def get_scenario_questions(scenario_name):
 
-    scenario = INTERVIEW_SCENARIOS[scenario_name]
+    scenario = INTERVIEW_SCENARIOS[
+        scenario_name
+    ]
 
     bank_questions = QUESTION_BANK[
         scenario["area"]
@@ -1851,7 +1891,10 @@ def get_scenario_questions(scenario_name):
 
     questions = []
 
-    topics = scenario.get("topics", [])
+    topics = scenario.get(
+        "topics",
+        [],
+    )
 
     for pos, bank_index in enumerate(
         scenario["questions"]
@@ -1886,6 +1929,7 @@ TRACKING_FILE = "usage_events.csv"
 def get_visitor_id():
 
     if "visitor_id" not in st.session_state:
+
         st.session_state.visitor_id = str(
             uuid.uuid4()
         )
@@ -1893,7 +1937,10 @@ def get_visitor_id():
     return st.session_state.visitor_id
 
 
-def track_event(event_name, **details):
+def track_event(
+    event_name,
+    **details,
+):
 
     try:
 
@@ -1901,8 +1948,11 @@ def track_event(event_name, **details):
             "timestamp_utc": datetime.now(
                 timezone.utc
             ).isoformat(),
+
             "visitor_id": get_visitor_id(),
+
             "event": event_name,
+
             **details,
         }
 
@@ -1935,10 +1985,22 @@ def track_interview_started():
 
     track_event(
         "interview_started",
-        scenario=st.session_state.selected_scenario,
-        area=st.session_state.selected_area,
-        level=st.session_state.selected_level,
-        questions=st.session_state.number_of_questions,
+
+        scenario=(
+            st.session_state.selected_scenario
+        ),
+
+        area=(
+            st.session_state.selected_area
+        ),
+
+        level=(
+            st.session_state.selected_level
+        ),
+
+        questions=(
+            st.session_state.number_of_questions
+        ),
     )
 
 
@@ -1952,17 +2014,21 @@ get_visitor_id()
 defaults = {
 
     "interview_started": False,
+
     "interview_completed": False,
 
     "selected_questions": [],
+
     "current_index": 0,
 
     "answers": {},
+
     "evaluations": {},
 
     "answer_submitted": False,
 
     "selected_area": "Equity Valuation",
+
     "selected_level": "Associate",
 
     "number_of_questions": 5,
@@ -1978,6 +2044,7 @@ defaults = {
     "history": [],
 
     "usage_started_tracked": False,
+
     "usage_completed_tracked": False,
 
     "interviewer_reaction": "",
@@ -1987,6 +2054,7 @@ defaults = {
 for key, value in defaults.items():
 
     if key not in st.session_state:
+
         st.session_state[key] = value
 
 
@@ -2009,20 +2077,18 @@ if not st.session_state.usage_started_tracked:
 
 with st.sidebar:
 
-    st.markdown(
-        '<div class="sidebar-brand">🎯 InterviewSathi</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="sidebar-brand">🎯 InterviewSathi</div>'
     )
 
-    st.markdown(
+    st.html(
         """
         <div class="sidebar-tag">
             Better Practice.<br>
             Stronger Interviews.<br>
             Bigger Opportunities.
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     page = st.radio(
@@ -2062,6 +2128,7 @@ with st.sidebar:
 if st.session_state.interview_started:
 
     st.session_state.page = "Interviews"
+
     page = "Interviews"
 
 
@@ -2095,25 +2162,15 @@ if (
         else 0
     )
 
-    st.markdown(
-        '<div class="dashboard-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="dashboard-shell">'
     )
 
-    st.write("TEST VERSION 123")
-    st.html("""
-<div style="
-    padding: 30px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    font-size: 28px;
-    font-weight: 700;
-">
-    HTML TEST — InterviewSathi
-</div>
-""")
-    st.markdown(
+    # -----------------------------------------------------
+    # HERO
+    # -----------------------------------------------------
+
+    st.html(
         """
         <div class="hero-dashboard">
 
@@ -2140,27 +2197,25 @@ if (
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
-    st.markdown(
-        '<div class="section-title">Your Progress</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-title">Your Progress</div>'
     )
 
-    st.markdown(
-        '<div class="section-subtitle">Your interview practice at a glance.</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-subtitle">Your interview practice at a glance.</div>'
     )
 
     m1, m2, m3, m4 = st.columns(4)
 
     with m1:
 
-        st.markdown(
+        st.html(
             f"""
             <div class="metric-card">
+
                 <div class="metric-label">
                     TOTAL INTERVIEWS
                 </div>
@@ -2172,16 +2227,17 @@ if (
                 <div class="metric-note">
                     Completed sessions
                 </div>
+
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
     with m2:
 
-        st.markdown(
+        st.html(
             f"""
             <div class="metric-card">
+
                 <div class="metric-label">
                     AVERAGE SCORE
                 </div>
@@ -2193,16 +2249,17 @@ if (
                 <div class="metric-note">
                     Across completed interviews
                 </div>
+
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
     with m3:
 
-        st.markdown(
+        st.html(
             """
             <div class="metric-card">
+
                 <div class="metric-label">
                     TOPIC AREAS
                 </div>
@@ -2214,9 +2271,9 @@ if (
                 <div class="metric-note">
                     Core valuation areas
                 </div>
+
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
     with m4:
@@ -2227,9 +2284,10 @@ if (
             if x["score"] >= 7
         )
 
-        st.markdown(
+        st.html(
             f"""
             <div class="metric-card">
+
                 <div class="metric-label">
                     STRONG SESSIONS
                 </div>
@@ -2241,19 +2299,17 @@ if (
                 <div class="metric-note">
                     Score ≥ 7/10
                 </div>
+
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
-    st.markdown(
-        '<div class="section-title">Start Your Interview</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-title">Start Your Interview</div>'
     )
 
-    st.markdown(
-        '<div class="section-subtitle">Choose an interview that matches your preparation goal.</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-subtitle">Choose an interview that matches your preparation goal.</div>'
     )
 
     cards = [
@@ -2323,7 +2379,7 @@ if (
 
             with col:
 
-                st.markdown(
+                st.html(
                     f"""
                     <div class="interview-card">
 
@@ -2344,8 +2400,7 @@ if (
                         </div>
 
                     </div>
-                    """,
-                    unsafe_allow_html=True,
+                    """
                 )
 
                 if st.button(
@@ -2358,11 +2413,13 @@ if (
                     scenario_key = title
 
                     if title == "Case Studies — Portfolio":
+
                         scenario_key = (
                             "Portfolio Valuation — Senior"
                         )
 
                     if title == "Case Studies — Startup":
+
                         scenario_key = (
                             "Startup Valuation — Manager Case"
                         )
@@ -2398,12 +2455,17 @@ if (
                     )
 
                     st.session_state.current_index = 0
+
                     st.session_state.answers = {}
+
                     st.session_state.evaluations = {}
+
                     st.session_state.answer_submitted = False
+
                     st.session_state.interviewer_reaction = ""
 
                     st.session_state.interview_started = True
+
                     st.session_state.interview_completed = False
 
                     st.session_state.usage_completed_tracked = False
@@ -2412,7 +2474,6 @@ if (
 
                     st.session_state.page = "Interviews"
 
-                    # Track Home-page interview starts.
                     track_interview_started()
 
                     st.rerun()
@@ -2423,16 +2484,14 @@ if (
 
     with left:
 
-        st.markdown(
-            '<div class="section-title">Recent Activity</div>',
-            unsafe_allow_html=True,
+        st.html(
+            '<div class="section-title">Recent Activity</div>'
         )
 
         if history:
 
-            st.markdown(
-                '<div class="recent-card">',
-                unsafe_allow_html=True,
+            st.html(
+                '<div class="recent-card">'
             )
 
             for item in history[-5:][::-1]:
@@ -2443,9 +2502,8 @@ if (
                     f"{item['questions']} questions"
                 )
 
-            st.markdown(
-                '</div>',
-                unsafe_allow_html=True,
+            st.html(
+                '</div>'
             )
 
         else:
@@ -2456,12 +2514,11 @@ if (
 
     with right:
 
-        st.markdown(
-            '<div class="section-title">Keep Going</div>',
-            unsafe_allow_html=True,
+        st.html(
+            '<div class="section-title">Keep Going</div>'
         )
 
-        st.markdown(
+        st.html(
             """
             <div class="quote-card">
 
@@ -2476,13 +2533,11 @@ if (
                 </div>
 
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
 
 
@@ -2495,19 +2550,16 @@ elif (
     and not st.session_state.interview_started
 ):
 
-    st.markdown(
-        '<div class="dashboard-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="dashboard-shell">'
     )
 
-    st.markdown(
-        '<div class="section-title">Interviews</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-title">Interviews</div>'
     )
 
-    st.markdown(
-        '<div class="section-subtitle">Pick a connected technical interview. The next question reacts to your previous answer.</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-subtitle">Pick a connected technical interview. The next question reacts to your previous answer.</div>'
     )
 
     selected_scenario = st.selectbox(
@@ -2538,24 +2590,27 @@ elif (
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         st.metric(
             "Area",
             scenario["area"],
         )
 
     with c2:
+
         st.metric(
             "Level",
             scenario["level"],
         )
 
     with c3:
+
         st.metric(
             "Questions",
             q_count,
         )
 
-    st.markdown(
+    st.html(
         f"""
         <div class="case-card">
 
@@ -2574,8 +2629,7 @@ elif (
             </span>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     if st.button(
@@ -2605,26 +2659,29 @@ elif (
         )
 
         st.session_state.current_index = 0
+
         st.session_state.answers = {}
+
         st.session_state.evaluations = {}
+
         st.session_state.answer_submitted = False
+
         st.session_state.interviewer_reaction = ""
 
         st.session_state.interview_started = True
+
         st.session_state.interview_completed = False
 
         st.session_state.usage_completed_tracked = False
 
         st.session_state.voice_text_box_version = {}
 
-        # Track interview start.
         track_interview_started()
 
         st.rerun()
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
 
 
@@ -2650,7 +2707,6 @@ elif (
         questions
     )
 
-    # Safety check.
     if total_questions == 0:
 
         st.error(
@@ -2675,9 +2731,8 @@ elif (
         st.session_state.selected_scenario
     ]
 
-    st.markdown(
-        '<div class="interview-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="interview-shell">'
     )
 
     st.progress(
@@ -2704,7 +2759,7 @@ elif (
         )
     )
 
-    st.markdown(
+    st.html(
         f"""
         <div class="interviewer-card">
 
@@ -2727,11 +2782,10 @@ elif (
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
-    st.markdown(
+    st.html(
         f"""
         <div class="question-card">
 
@@ -2745,8 +2799,7 @@ elif (
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # -----------------------------------------------------
@@ -2804,19 +2857,24 @@ elif (
 
     current_answer = st.text_area(
         "📝 Review & Edit",
+
         value=st.session_state.answers.get(
             current_index,
             "",
         ),
+
         height=190,
+
         placeholder=(
             "Type your answer or use the microphone above..."
         ),
+
         key=(
             f"answer_box_"
             f"{current_index}_"
             f"{text_box_version}"
         ),
+
         disabled=st.session_state.answer_submitted,
     )
 
@@ -2966,10 +3024,13 @@ elif (
 
                 track_event(
                     "answer_submitted",
+
                     scenario=(
                         st.session_state.selected_scenario
                     ),
+
                     question_number=current_index + 1,
+
                     questions_total=total_questions,
                 )
 
@@ -3010,7 +3071,7 @@ elif (
             )
         )
 
-        st.markdown(
+        st.html(
             f"""
             <div class="reaction-card">
 
@@ -3021,18 +3082,21 @@ elif (
                 <br><br>
 
                 <b>Interviewer</b>
+
                 <br>
+
                 {reaction_text}
 
                 <br><br>
 
                 <b>Feedback</b>
+
                 <br>
+
                 {feedback_text}
 
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
         if current_index < total_questions - 1:
@@ -3069,15 +3133,19 @@ elif (
 
                     track_event(
                         "interview_completed",
+
                         scenario=(
                             st.session_state.selected_scenario
                         ),
+
                         area=(
                             st.session_state.selected_area
                         ),
+
                         level=(
                             st.session_state.selected_level
                         ),
+
                         questions=len(
                             st.session_state.evaluations
                         ),
@@ -3106,16 +3174,17 @@ elif (
                         "scenario": (
                             st.session_state.selected_scenario
                         ),
+
                         "score": overall,
+
                         "questions": len(scores),
                     }
                 )
 
                 st.rerun()
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
 
 
@@ -3136,9 +3205,8 @@ elif (
         st.session_state.selected_scenario
     ]
 
-    st.markdown(
-        '<div class="interview-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="interview-shell">'
     )
 
     st.subheader(
@@ -3168,7 +3236,7 @@ elif (
             if score >= 7
         )
 
-        st.markdown(
+        st.html(
             f"""
             <div class="final-card">
 
@@ -3186,25 +3254,27 @@ elif (
                 </p>
 
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
+
             st.metric(
                 "Overall Score",
                 f"{overall_score}/10",
             )
 
         with col2:
+
             st.metric(
                 "Questions",
                 len(scores),
             )
 
         with col3:
+
             st.metric(
                 "Strong Answers",
                 strong_answers,
@@ -3344,12 +3414,15 @@ elif (
     ):
 
         st.session_state.interview_started = False
+
         st.session_state.interview_completed = False
 
         st.session_state.selected_questions = []
+
         st.session_state.current_index = 0
 
         st.session_state.answers = {}
+
         st.session_state.evaluations = {}
 
         st.session_state.answer_submitted = False
@@ -3362,9 +3435,8 @@ elif (
 
         st.rerun()
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
 
 
@@ -3374,29 +3446,28 @@ elif (
 
 elif page == "Analytics":
 
-    st.markdown(
-        '<div class="dashboard-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="dashboard-shell">'
     )
 
-    st.markdown(
-        '<div class="section-title">Analytics</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-title">Analytics</div>'
     )
 
-    st.markdown(
-        '<div class="section-subtitle">Simple anonymous usage tracking for InterviewSathi.</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-subtitle">Simple anonymous usage tracking for InterviewSathi.</div>'
     )
 
-    admin_password = (
-        st.secrets.get(
+    try:
+
+        admin_password = st.secrets.get(
             "ADMIN_PASSWORD",
             "",
         )
-        if hasattr(st, "secrets")
-        else ""
-    )
+
+    except Exception:
+
+        admin_password = ""
 
     entered_password = st.text_input(
         "Admin password",
@@ -3530,18 +3601,22 @@ elif page == "Analytics":
                             "timestamp_utc",
                             "",
                         ),
+
                         "Level": r.get(
                             "level",
                             "",
                         ),
+
                         "Area": r.get(
                             "area",
                             "",
                         ),
+
                         "Interview": r.get(
                             "scenario",
                             "",
                         ),
+
                         "Questions": r.get(
                             "questions",
                             "",
@@ -3565,9 +3640,8 @@ elif page == "Analytics":
             "Tracking is anonymous; no visitor names are collected."
         )
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
 
 
@@ -3581,19 +3655,16 @@ elif page == "Performance":
         st.session_state.history
     )
 
-    st.markdown(
-        '<div class="dashboard-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="dashboard-shell">'
     )
 
-    st.markdown(
-        '<div class="section-title">Performance</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-title">Performance</div>'
     )
 
-    st.markdown(
-        '<div class="section-subtitle">Your completed InterviewSathi sessions.</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-subtitle">Your completed InterviewSathi sessions.</div>'
     )
 
     if not history:
@@ -3638,7 +3709,7 @@ elif page == "Performance":
 
         for item in history[::-1]:
 
-            st.markdown(
+            st.html(
                 f"""
                 <div class="recent-card">
 
@@ -3656,13 +3727,11 @@ elif page == "Performance":
                 </div>
 
                 <br>
-                """,
-                unsafe_allow_html=True,
+                """
             )
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
 
 
@@ -3672,19 +3741,16 @@ elif page == "Performance":
 
 elif page == "Settings":
 
-    st.markdown(
-        '<div class="dashboard-shell">',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="dashboard-shell">'
     )
 
-    st.markdown(
-        '<div class="section-title">Settings</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-title">Settings</div>'
     )
 
-    st.markdown(
-        '<div class="section-subtitle">Simple preferences for the interview experience.</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '<div class="section-subtitle">Simple preferences for the interview experience.</div>'
     )
 
     st.checkbox(
@@ -3703,7 +3769,6 @@ elif page == "Settings":
         "More personalization options can be added later as InterviewSathi grows."
     )
 
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True,
+    st.html(
+        '</div>'
     )
