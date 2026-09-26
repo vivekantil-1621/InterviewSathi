@@ -19,6 +19,8 @@ st.set_page_config(
     page_icon="🎯",
     layout="wide"
 )
+
+
 # =========================================================
 # CUSTOM CSS
 # =========================================================
@@ -1370,7 +1372,6 @@ Requirements:
         return None
 
 
-
 # =========================================================
 # INTERVIEW SCENARIOS
 # =========================================================
@@ -1393,6 +1394,7 @@ INTERVIEW_SCENARIOS = {
             "Equity Risk Premium versus Company Specific Risk Premium"
         ],
     },
+
     "Equity Valuation — Private Company": {
         "area": "Equity Valuation",
         "level": "Senior Associate",
@@ -1400,8 +1402,15 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "Senior Valuation Manager",
         "intro": "Let's discuss a private company valuation. I will start with methodology and then probe your assumptions and judgment.",
         "questions": [0, 1, 2, 3, 6],
-        "topics": ["DCF process", "private-company WACC", "WACC risk differences", "EBITDA multiple selection", "Company Specific Risk Premium"],
+        "topics": [
+            "DCF process",
+            "private-company WACC",
+            "WACC risk differences",
+            "EBITDA multiple selection",
+            "Company Specific Risk Premium"
+        ],
     },
+
     "Equity Valuation — Manager Case": {
         "area": "Equity Valuation",
         "level": "Assistant Manager",
@@ -1409,8 +1418,15 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "Valuation Director",
         "intro": "Assume you are leading a private-company valuation with limited information. I am interested in how you structure the problem and defend your judgment.",
         "questions": [0, 1, 2, 3, 4],
-        "topics": ["private-company valuation approach", "margin versus peers", "customer concentration and valuation risk", "management projections", "selecting a multiple from a wide comparable range"],
+        "topics": [
+            "private-company valuation approach",
+            "margin versus peers",
+            "customer concentration and valuation risk",
+            "management projections",
+            "selecting a multiple from a wide comparable range"
+        ],
     },
+
     "Equity Allocation — Capital Structure": {
         "area": "Equity Allocation",
         "level": "Senior Associate",
@@ -1418,8 +1434,15 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "Valuation Director",
         "intro": "We are valuing a company with preferred and common equity. We will move from the allocation framework into OPM assumptions and conversion rights.",
         "questions": [0, 1, 3, 4, 2],
-        "topics": ["OPM allocation", "OPM inputs", "conversion ratios", "employee stock options", "OPM versus CVM and PWERM"],
+        "topics": [
+            "OPM allocation",
+            "OPM inputs",
+            "conversion ratios",
+            "employee stock options",
+            "OPM versus CVM and PWERM"
+        ],
     },
+
     "PPA — Intangible Assets": {
         "area": "PPA",
         "level": "Senior Associate",
@@ -1427,8 +1450,15 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "PPA Senior Manager",
         "intro": "Assume we have completed an acquisition and identified Customer Relationships, Developed Technology and Trade Name. Let's work through the valuation logic.",
         "questions": [0, 1, 2, 3, 4],
-        "topics": ["PPA fundamentals", "major intangible assets", "Relief-from-Royalty", "MPEEM", "With-and-Without Method"],
+        "topics": [
+            "PPA fundamentals",
+            "major intangible assets",
+            "Relief-from-Royalty",
+            "MPEEM",
+            "With-and-Without Method"
+        ],
     },
+
     "PPA — Acquisition Case": {
         "area": "PPA",
         "level": "Assistant Manager",
@@ -1436,8 +1466,14 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "PPA Senior Manager",
         "intro": "You are leading the PPA for an acquisition with significant intangible assets. I will test both methodology and the assumptions behind your valuation.",
         "questions": [0, 1, 2, 3],
-        "topics": ["PPA acquisition approach", "customer relationship attrition", "developed technology useful life", "Trade Name Relief-from-Royalty valuation"],
+        "topics": [
+            "PPA acquisition approach",
+            "customer relationship attrition",
+            "developed technology useful life",
+            "Trade Name Relief-from-Royalty valuation"
+        ],
     },
+
     "Portfolio Valuation — Senior": {
         "area": "Case Studies",
         "level": "Senior Associate",
@@ -1445,8 +1481,14 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "Portfolio Valuation Director",
         "intro": "You have been asked to support a portfolio valuation engagement. We will move from engagement planning into individual valuation judgments.",
         "questions": [0, 1, 2, 3],
-        "topics": ["portfolio valuation engagement process", "startup information and valuation approach", "GPC multiple selection", "venture capital rate of return"],
+        "topics": [
+            "portfolio valuation engagement process",
+            "startup information and valuation approach",
+            "GPC multiple selection",
+            "venture capital rate of return"
+        ],
     },
+
     "Startup Valuation — Manager Case": {
         "area": "Case Studies",
         "level": "Assistant Manager",
@@ -1454,39 +1496,64 @@ INTERVIEW_SCENARIOS = {
         "interviewer_title": "Portfolio Valuation Director",
         "intro": "Let's work through a startup valuation where historical earnings are limited and multiple future outcomes are possible.",
         "questions": [1, 3, 2, 0],
-        "topics": ["startup information request", "venture capital method", "GPC multiple selection", "basic business valuation approach"],
+        "topics": [
+            "startup information request",
+            "venture capital method",
+            "GPC multiple selection",
+            "basic business valuation approach"
+        ],
     },
 }
 
 
 def get_scenario_questions(scenario_name):
+
     scenario = INTERVIEW_SCENARIOS[scenario_name]
     bank_questions = QUESTION_BANK[scenario["area"]][scenario["level"]]
     questions = []
     topics = scenario.get("topics", [])
 
     for pos, bank_index in enumerate(scenario["questions"]):
+
         if bank_index < len(bank_questions):
+
             q = dict(bank_questions[bank_index])
-            q["topic"] = topics[pos] if pos < len(topics) else "technical valuation"
+
+            q["topic"] = (
+                topics[pos]
+                if pos < len(topics)
+                else "technical valuation"
+            )
+
             q["base_question"] = q["question"]
+
             questions.append(q)
 
     return questions
 
 
 # =========================================================
-# =========================================================
 # INTERVIEW SATHI DASHBOARD + INTERVIEW EXPERIENCE
 # =========================================================
 
 st.markdown("""
 <style>
+
 /* ---------- GLOBAL ---------- */
-.block-container { padding-top: 1.2rem; padding-bottom: 3rem; }
+
+.block-container {
+    padding-top: 1.2rem;
+    padding-bottom: 3rem;
+}
+
 
 /* ---------- DASHBOARD ---------- */
-.dashboard-shell { max-width: 1250px; margin: 0 auto; }
+
+.dashboard-shell {
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
 .hero-dashboard {
     background: linear-gradient(135deg, #eef4ff 0%, #f6f0ff 100%);
     border: 1px solid #dfe7f5;
@@ -1494,366 +1561,1247 @@ st.markdown("""
     padding: 30px 34px;
     margin-bottom: 22px;
 }
-.hero-kicker { color:#6366f1; font-size:12px; font-weight:800; letter-spacing:.12em; }
-.hero-title { color:#111827; font-size:38px; line-height:1.08; font-weight:850; margin-top:5px; }
-.hero-subtitle { color:#475569; font-size:16px; line-height:1.6; margin-top:10px; max-width:760px; }
-.pill-row { margin-top:18px; }
+
+.hero-kicker {
+    color:#6366f1;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.12em;
+}
+
+.hero-title {
+    color:#111827;
+    font-size:38px;
+    line-height:1.08;
+    font-weight:850;
+    margin-top:5px;
+}
+
+.hero-subtitle {
+    color:#475569;
+    font-size:16px;
+    line-height:1.6;
+    margin-top:10px;
+    max-width:760px;
+}
+
+.pill-row {
+    margin-top:18px;
+}
+
 .pill {
-    display:inline-block; background:white; border:1px solid #dbe3f0;
-    border-radius:999px; padding:7px 12px; margin:3px 5px 3px 0;
-    color:#334155; font-size:12px; font-weight:700;
+    display:inline-block;
+    background:white;
+    border:1px solid #dbe3f0;
+    border-radius:999px;
+    padding:7px 12px;
+    margin:3px 5px 3px 0;
+    color:#334155;
+    font-size:12px;
+    font-weight:700;
 }
-.section-title { color:#0f172a; font-size:23px; font-weight:800; margin:18px 0 5px; }
-.section-subtitle { color:#64748b; font-size:14px; margin-bottom:14px; }
+
+.section-title {
+    color:#0f172a;
+    font-size:23px;
+    font-weight:800;
+    margin:18px 0 5px;
+}
+
+.section-subtitle {
+    color:#64748b;
+    font-size:14px;
+    margin-bottom:14px;
+}
+
 .metric-card {
-    background:white; border:1px solid #e2e8f0; border-radius:16px;
-    padding:17px 18px; min-height:105px; box-shadow:0 4px 14px rgba(15,23,42,.04);
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:17px 18px;
+    min-height:105px;
+    box-shadow:0 4px 14px rgba(15,23,42,.04);
 }
-.metric-label { color:#64748b; font-size:12px; font-weight:700; }
-.metric-value { color:#111827; font-size:27px; font-weight:850; margin-top:5px; }
-.metric-note { color:#94a3b8; font-size:11px; margin-top:3px; }
+
+.metric-label {
+    color:#64748b;
+    font-size:12px;
+    font-weight:700;
+}
+
+.metric-value {
+    color:#111827;
+    font-size:27px;
+    font-weight:850;
+    margin-top:5px;
+}
+
+.metric-note {
+    color:#94a3b8;
+    font-size:11px;
+    margin-top:3px;
+}
+
 .case-card {
-    background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px;
-    padding:20px 22px; margin:12px 0 18px; line-height:1.55;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:20px 22px;
+    margin:12px 0 18px;
+    line-height:1.55;
 }
 
 .interview-card {
-    background:#fff; border:1px solid #e2e8f0; border-radius:18px;
-    padding:19px; min-height:205px; box-shadow:0 4px 14px rgba(15,23,42,.04);
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    padding:19px;
+    min-height:205px;
+    box-shadow:0 4px 14px rgba(15,23,42,.04);
 }
+
 .card-icon {
-    width:42px; height:42px; display:flex; align-items:center; justify-content:center;
-    border-radius:12px; background:#eef2ff; font-size:21px; margin-bottom:12px;
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:#eef2ff;
+    font-size:21px;
+    margin-bottom:12px;
 }
-.card-title { color:#111827; font-size:17px; font-weight:800; }
-.card-meta { color:#64748b; font-size:12px; margin-top:5px; }
-.card-desc { color:#475569; font-size:13px; line-height:1.45; margin:12px 0 13px; }
+
+.card-title {
+    color:#111827;
+    font-size:17px;
+    font-weight:800;
+}
+
+.card-meta {
+    color:#64748b;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.card-desc {
+    color:#475569;
+    font-size:13px;
+    line-height:1.45;
+    margin:12px 0 13px;
+}
+
 .recent-card {
-    background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:16px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:16px;
 }
+
 .quote-card {
-    background:linear-gradient(135deg,#111827,#312e81); color:white;
-    border-radius:18px; padding:20px; min-height:140px;
+    background:linear-gradient(135deg,#111827,#312e81);
+    color:white;
+    border-radius:18px;
+    padding:20px;
+    min-height:140px;
 }
-.quote-text { font-size:16px; line-height:1.55; font-weight:650; }
-.quote-small { color:#cbd5e1; font-size:12px; margin-top:12px; }
+
+.quote-text {
+    font-size:16px;
+    line-height:1.55;
+    font-weight:650;
+}
+
+.quote-small {
+    color:#cbd5e1;
+    font-size:12px;
+    margin-top:12px;
+}
+
 
 /* ---------- INTERVIEW ROOM ---------- */
-.interview-shell { max-width: 1100px; margin: 0 auto; }
+
+.interview-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
 .interviewer-card {
     background:linear-gradient(135deg,#111827 0%,#1e293b 100%);
-    color:white; border-radius:18px; padding:22px 26px;
-    margin:8px 0 18px; border:1px solid #334155;
+    color:white;
+    border-radius:18px;
+    padding:22px 26px;
+    margin:8px 0 18px;
+    border:1px solid #334155;
 }
+
 .interviewer-avatar {
-    display:inline-flex; width:46px; height:46px; border-radius:50%;
-    align-items:center; justify-content:center; background:#334155;
-    font-size:23px; margin-right:12px; vertical-align:middle;
+    display:inline-flex;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    align-items:center;
+    justify-content:center;
+    background:#334155;
+    font-size:23px;
+    margin-right:12px;
+    vertical-align:middle;
 }
-.interviewer-name { font-size:19px; font-weight:750; }
-.interviewer-role { color:#cbd5e1; font-size:13px; }
-.interviewer-note { color:#e2e8f0; font-size:15px; margin-top:12px; line-height:1.55; }
+
+.interviewer-name {
+    font-size:19px;
+    font-weight:750;
+}
+
+.interviewer-role {
+    color:#cbd5e1;
+    font-size:13px;
+}
+
+.interviewer-note {
+    color:#e2e8f0;
+    font-size:15px;
+    margin-top:12px;
+    line-height:1.55;
+}
+
 .question-card {
     background:linear-gradient(135deg,#eef4ff 0%,#f7f3ff 100%);
-    border:1px solid #dbe4ff; border-radius:18px; padding:24px 26px;
+    border:1px solid #dbe4ff;
+    border-radius:18px;
+    padding:24px 26px;
     margin:12px 0 20px;
 }
-.question-label { color:#6366f1; font-size:13px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
-.question-text { color:#0f172a; font-size:25px; line-height:1.35; font-weight:700; margin-top:8px; }
-.reaction-card {
-    background:#f8fafc; border-left:4px solid #6366f1; border-radius:10px;
-    padding:14px 18px; margin:15px 0;
+
+.question-label {
+    color:#6366f1;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
 }
-.score-pill { font-size:28px; font-weight:800; color:#312e81; }
+
+.question-text {
+    color:#0f172a;
+    font-size:25px;
+    line-height:1.35;
+    font-weight:700;
+    margin-top:8px;
+}
+
+.reaction-card {
+    background:#f8fafc;
+    border-left:4px solid #6366f1;
+    border-radius:10px;
+    padding:14px 18px;
+    margin:15px 0;
+}
+
+.score-pill {
+    font-size:28px;
+    font-weight:800;
+    color:#312e81;
+}
+
 .final-card {
     background:linear-gradient(135deg,#eef4ff 0%,#faf5ff 100%);
-    border:1px solid #dbe4ff; border-radius:18px; padding:24px;
+    border:1px solid #dbe4ff;
+    border-radius:18px;
+    padding:24px;
 }
-.small-muted { color:#64748b; font-size:13px; }
+
+.small-muted {
+    color:#64748b;
+    font-size:13px;
+}
+
 
 /* ---------- SIDEBAR ---------- */
-.sidebar-brand { font-size:22px; font-weight:850; color:#172554; margin-bottom:3px; }
-.sidebar-tag { color:#64748b; font-size:11px; line-height:1.45; margin-bottom:16px; }
+
+.sidebar-brand {
+    font-size:22px;
+    font-weight:850;
+    color:#172554;
+    margin-bottom:3px;
+}
+
+.sidebar-tag {
+    color:#64748b;
+    font-size:11px;
+    line-height:1.45;
+    margin-bottom:16px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- ANONYMOUS USAGE TRACKING ----------
+
+# =========================================================
+# ANONYMOUS USAGE TRACKING
+# =========================================================
+
 TRACKING_FILE = "usage_events.csv"
 
+
 def get_visitor_id():
+
     if "visitor_id" not in st.session_state:
         st.session_state.visitor_id = str(uuid.uuid4())
+
     return st.session_state.visitor_id
 
+
 def track_event(event_name, **details):
+
     try:
-        row = {"timestamp_utc": datetime.now(timezone.utc).isoformat(), "visitor_id": get_visitor_id(), "event": event_name, **details}
+
+        row = {
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "visitor_id": get_visitor_id(),
+            "event": event_name,
+            **details
+        }
+
         file_exists = os.path.exists(TRACKING_FILE)
-        with open(TRACKING_FILE, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=row.keys())
+
+        with open(
+            TRACKING_FILE,
+            "a",
+            newline="",
+            encoding="utf-8"
+        ) as f:
+
+            writer = csv.DictWriter(
+                f,
+                fieldnames=row.keys()
+            )
+
             if not file_exists:
                 writer.writeheader()
+
             writer.writerow(row)
+
     except Exception:
         pass
 
+
+# =========================================================
+# INTERVIEW START TRACKING
+# =========================================================
+
+def track_interview_started():
+
+    track_event(
+        "interview_started",
+        scenario=st.session_state.selected_scenario,
+        area=st.session_state.selected_area,
+        level=st.session_state.selected_level,
+        questions=st.session_state.number_of_questions,
+    )
+
+
 get_visitor_id()
 
-# ---------- SESSION STATE ----------
+
+# =========================================================
+# SESSION STATE
+# =========================================================
+
 defaults = {
+
     "interview_started": False,
+
     "interview_completed": False,
+
     "selected_questions": [],
+
     "current_index": 0,
+
     "answers": {},
+
     "evaluations": {},
+
     "answer_submitted": False,
+
     "selected_area": "Equity Valuation",
+
     "selected_level": "Associate",
+
     "number_of_questions": 5,
+
     "voice_text_box_version": {},
+
     "selected_scenario": "Equity Valuation — Fundamentals",
+
     "page": "Home",
+
     "history": [],
+
     "usage_started_tracked": False,
+
     "usage_completed_tracked": False,
 }
+
+
 for key, value in defaults.items():
+
     if key not in st.session_state:
         st.session_state[key] = value
 
+
+# =========================================================
+# APP OPEN TRACKING
+# =========================================================
+
 # Track one anonymous app-open event per browser session.
 # Keep this AFTER session-state initialization so the key always exists.
+
 if not st.session_state.usage_started_tracked:
+
     track_event("app_opened")
+
     st.session_state.usage_started_tracked = True
 
-# ---------- SIDEBAR NAVIGATION ----------
+
+# =========================================================
+# SIDEBAR NAVIGATION
+# =========================================================
+
 with st.sidebar:
-    st.markdown('<div class="sidebar-brand">🎯 InterviewSathi</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-tag">Better Practice.<br>Stronger Interviews.<br>Bigger Opportunities.</div>', unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="sidebar-brand">🎯 InterviewSathi</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="sidebar-tag">Better Practice.<br>Stronger Interviews.<br>Bigger Opportunities.</div>',
+        unsafe_allow_html=True
+    )
 
     page = st.radio(
         "",
-        ["Home", "Interviews", "Performance", "Analytics", "Settings"],
-        index=["Home", "Interviews", "Performance", "Analytics", "Settings"].index(st.session_state.page),
+        [
+            "Home",
+            "Interviews",
+            "Performance",
+            "Analytics",
+            "Settings"
+        ],
+        index=[
+            "Home",
+            "Interviews",
+            "Performance",
+            "Analytics",
+            "Settings"
+        ].index(st.session_state.page),
         label_visibility="collapsed"
     )
-    st.session_state.page = page
-    st.divider()
-    st.caption("AI-style technical valuation practice")
 
-# If an interview is active, always keep the user in the interview room.
+    st.session_state.page = page
+
+    st.divider()
+
+    st.caption(
+        "AI-style technical valuation practice"
+    )
+
+
+# =========================================================
+# FORCE ACTIVE INTERVIEW PAGE
+# =========================================================
+
 if st.session_state.interview_started:
+
     st.session_state.page = "Interviews"
+
     page = "Interviews"
 
-scenario_names = list(INTERVIEW_SCENARIOS.keys())
 
-# ---------- HOME DASHBOARD ----------
+scenario_names = list(
+    INTERVIEW_SCENARIOS.keys()
+)
+
+
+# =========================================================
+# HOME DASHBOARD
+# =========================================================
+
 if page == "Home" and not st.session_state.interview_started:
+
     history = st.session_state.history
+
     completed = len(history)
-    avg_score = round(sum(x["score"] for x in history) / completed, 1) if completed else 0
 
-    st.markdown('<div class="dashboard-shell">', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="hero-dashboard">
-        <div class="hero-kicker">YOUR VALUATION INTERVIEW PARTNER</div>
-        <div class="hero-title">Practice like it’s a real interview.</div>
-        <div class="hero-subtitle">
-            InterviewSathi turns valuation preparation into a connected technical interview —
-            not a random list of questions. Answer, think, get feedback, and move to the next level.
-        </div>
-        <div class="pill-row">
-            <span class="pill">Equity Valuation</span>
-            <span class="pill">Equity Allocation</span>
-            <span class="pill">PPA</span>
-            <span class="pill">Case Studies</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    avg_score = (
+        round(
+            sum(x["score"] for x in history) / completed,
+            1
+        )
+        if completed
+        else 0
+    )
 
-    st.markdown('<div class="section-title">Your Progress</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Your interview practice at a glance.</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="dashboard-shell">',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div class="hero-dashboard">
+            <div class="hero-kicker">
+                YOUR VALUATION INTERVIEW PARTNER
+            </div>
+
+            <div class="hero-title">
+                Practice like it’s a real interview.
+            </div>
+
+            <div class="hero-subtitle">
+                InterviewSathi turns valuation preparation into a connected technical interview —
+                not a random list of questions. Answer, think, get feedback, and move to the next level.
+            </div>
+
+            <div class="pill-row">
+                <span class="pill">Equity Valuation</span>
+                <span class="pill">Equity Allocation</span>
+                <span class="pill">PPA</span>
+                <span class="pill">Case Studies</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-title">Your Progress</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-subtitle">Your interview practice at a glance.</div>',
+        unsafe_allow_html=True
+    )
+
+
     m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">TOTAL INTERVIEWS</div><div class="metric-value">{completed}</div><div class="metric-note">Completed sessions</div></div>', unsafe_allow_html=True)
-    with m2:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">AVERAGE SCORE</div><div class="metric-value">{avg_score}/10</div><div class="metric-note">Across completed interviews</div></div>', unsafe_allow_html=True)
-    with m3:
-        st.markdown(f'<div class="metric-card"><div class="metric-label">TOPIC AREAS</div><div class="metric-value">4</div><div class="metric-note">Core valuation areas</div></div>', unsafe_allow_html=True)
-    with m4:
-        strong = sum(1 for x in history if x["score"] >= 7)
-        st.markdown(f'<div class="metric-card"><div class="metric-label">STRONG SESSIONS</div><div class="metric-value">{strong}</div><div class="metric-note">Score ≥ 7/10</div></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="section-title">Start Your Interview</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Choose an interview that matches your preparation goal.</div>', unsafe_allow_html=True)
+
+    with m1:
+
+        st.markdown(
+            f'''
+            <div class="metric-card">
+                <div class="metric-label">
+                    TOTAL INTERVIEWS
+                </div>
+                <div class="metric-value">
+                    {completed}
+                </div>
+                <div class="metric-note">
+                    Completed sessions
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+
+    with m2:
+
+        st.markdown(
+            f'''
+            <div class="metric-card">
+                <div class="metric-label">
+                    AVERAGE SCORE
+                </div>
+                <div class="metric-value">
+                    {avg_score}/10
+                </div>
+                <div class="metric-note">
+                    Across completed interviews
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+
+    with m3:
+
+        st.markdown(
+            '''
+            <div class="metric-card">
+                <div class="metric-label">
+                    TOPIC AREAS
+                </div>
+                <div class="metric-value">
+                    4
+                </div>
+                <div class="metric-note">
+                    Core valuation areas
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+
+    with m4:
+
+        strong = sum(
+            1
+            for x in history
+            if x["score"] >= 7
+        )
+
+        st.markdown(
+            f'''
+            <div class="metric-card">
+                <div class="metric-label">
+                    STRONG SESSIONS
+                </div>
+                <div class="metric-value">
+                    {strong}
+                </div>
+                <div class="metric-note">
+                    Score ≥ 7/10
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+
+    st.markdown(
+        '<div class="section-title">Start Your Interview</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-subtitle">Choose an interview that matches your preparation goal.</div>',
+        unsafe_allow_html=True
+    )
+
 
     cards = [
-        ("📊", "Equity Valuation — Fundamentals", "Associate", "Start with EV vs Equity Value, multiples, WACC and CSRP."),
-        ("🏢", "Equity Valuation — Private Company", "Senior Associate", "Move from methodology into private-company assumptions and judgment."),
-        ("🧩", "Equity Allocation — Capital Structure", "Senior Associate", "Work through OPM, conversion rights, options and allocation logic."),
-        ("🧾", "PPA — Intangible Assets", "Senior Associate", "Discuss Customer Relationships, Developed Technology and Trade Name."),
-        ("📁", "Case Studies — Portfolio", "Senior Associate", "Work through a 30-investment portfolio and valuation judgments."),
-        ("🚀", "Case Studies — Startup", "Assistant Manager", "Handle startup valuation, VC method and scenario-based thinking."),
+
+        (
+            "📊",
+            "Equity Valuation — Fundamentals",
+            "Associate",
+            "Start with EV vs Equity Value, multiples, WACC and CSRP."
+        ),
+
+        (
+            "🏢",
+            "Equity Valuation — Private Company",
+            "Senior Associate",
+            "Move from methodology into private-company assumptions and judgment."
+        ),
+
+        (
+            "🧩",
+            "Equity Allocation — Capital Structure",
+            "Senior Associate",
+            "Work through OPM, conversion rights, options and allocation logic."
+        ),
+
+        (
+            "🧾",
+            "PPA — Intangible Assets",
+            "Senior Associate",
+            "Discuss Customer Relationships, Developed Technology and Trade Name."
+        ),
+
+        (
+            "📁",
+            "Case Studies — Portfolio",
+            "Senior Associate",
+            "Work through a 30-investment portfolio and valuation judgments."
+        ),
+
+        (
+            "🚀",
+            "Case Studies — Startup",
+            "Assistant Manager",
+            "Handle startup valuation, VC method and scenario-based thinking."
+        ),
+
     ]
 
-    for row_start in range(0, len(cards), 3):
+
+    for row_start in range(
+        0,
+        len(cards),
+        3
+    ):
+
         cols = st.columns(3)
-        for col, (icon, title, level, desc) in zip(cols, cards[row_start:row_start+3]):
+
+
+        for col, (
+            icon,
+            title,
+            level,
+            desc
+        ) in zip(
+            cols,
+            cards[row_start:row_start + 3]
+        ):
+
             with col:
-                st.markdown(f'<div class="interview-card"><div class="card-icon">{icon}</div><div class="card-title">{title}</div><div class="card-meta">{level} · Connected interview</div><div class="card-desc">{desc}</div></div>', unsafe_allow_html=True)
-                if st.button("Start Interview →", key=f"home_start_{title}", use_container_width=True, type="primary"):
+
+                st.markdown(
+                    f'''
+                    <div class="interview-card">
+                        <div class="card-icon">
+                            {icon}
+                        </div>
+
+                        <div class="card-title">
+                            {title}
+                        </div>
+
+                        <div class="card-meta">
+                            {level} · Connected interview
+                        </div>
+
+                        <div class="card-desc">
+                            {desc}
+                        </div>
+                    </div>
+                    ''',
+                    unsafe_allow_html=True
+                )
+
+
+                if st.button(
+                    "Start Interview →",
+                    key=f"home_start_{title}",
+                    use_container_width=True,
+                    type="primary"
+                ):
+
                     scenario_key = title
-                    if title == "Case Studies — Portfolio": scenario_key = "Portfolio Valuation — Senior"
-                    if title == "Case Studies — Startup": scenario_key = "Startup Valuation — Manager Case"
+
+
+                    if title == "Case Studies — Portfolio":
+
+                        scenario_key = "Portfolio Valuation — Senior"
+
+
+                    if title == "Case Studies — Startup":
+
+                        scenario_key = "Startup Valuation — Manager Case"
+
+
                     st.session_state.selected_scenario = scenario_key
-                    scenario = INTERVIEW_SCENARIOS[scenario_key]
-                    st.session_state.selected_area = scenario["area"]
-                    st.session_state.selected_level = scenario["level"]
-                    st.session_state.number_of_questions = len(get_scenario_questions(scenario_key))
-                    st.session_state.selected_questions = get_scenario_questions(scenario_key)
+
+                    scenario = INTERVIEW_SCENARIOS[
+                        scenario_key
+                    ]
+
+                    st.session_state.selected_area = scenario[
+                        "area"
+                    ]
+
+                    st.session_state.selected_level = scenario[
+                        "level"
+                    ]
+
+                    st.session_state.number_of_questions = len(
+                        get_scenario_questions(
+                            scenario_key
+                        )
+                    )
+
+                    st.session_state.selected_questions = (
+                        get_scenario_questions(
+                            scenario_key
+                        )
+                    )
+
                     st.session_state.current_index = 0
+
                     st.session_state.answers = {}
+
                     st.session_state.evaluations = {}
+
                     st.session_state.answer_submitted = False
+
                     st.session_state.interviewer_reaction = ""
+
                     st.session_state.interview_started = True
+
                     st.session_state.interview_completed = False
+
                     st.session_state.usage_completed_tracked = False
+
                     st.session_state.voice_text_box_version = {}
+
                     st.session_state.page = "Interviews"
+
+                    # FIX:
+                    # Track interview starts from the Home dashboard too.
+                    track_interview_started()
+
                     st.rerun()
 
-    left, right = st.columns([1.2, 1])
+
+    left, right = st.columns(
+        [1.2, 1]
+    )
+
+
     with left:
-        st.markdown('<div class="section-title">Recent Activity</div>', unsafe_allow_html=True)
+
+        st.markdown(
+            '<div class="section-title">Recent Activity</div>',
+            unsafe_allow_html=True
+        )
+
+
         if history:
-            st.markdown('<div class="recent-card">', unsafe_allow_html=True)
+
+            st.markdown(
+                '<div class="recent-card">',
+                unsafe_allow_html=True
+            )
+
+
             for item in history[-5:][::-1]:
-                st.write(f"**{item['scenario']}** · {item['score']}/10 · {item['questions']} questions")
-            st.markdown('</div>', unsafe_allow_html=True)
+
+                st.write(
+                    f"**{item['scenario']}** · "
+                    f"{item['score']}/10 · "
+                    f"{item['questions']} questions"
+                )
+
+
+            st.markdown(
+                '</div>',
+                unsafe_allow_html=True
+            )
+
         else:
-            st.info("Your completed interviews will appear here.")
+
+            st.info(
+                "Your completed interviews will appear here."
+            )
+
+
     with right:
-        st.markdown('<div class="section-title">Keep Going</div>', unsafe_allow_html=True)
-        st.markdown('<div class="quote-card"><div class="quote-text">“A strong valuation interview is not about memorising formulas. It is about explaining why your approach makes sense.”</div><div class="quote-small">InterviewSathi · Technical Practice</div></div>', unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-title">Keep Going</div>',
+            unsafe_allow_html=True
+        )
 
-# ---------- INTERVIEWS PAGE ----------
+        st.markdown(
+            '''
+            <div class="quote-card">
+                <div class="quote-text">
+                    “A strong valuation interview is not about memorising formulas.
+                    It is about explaining why your approach makes sense.”
+                </div>
+
+                <div class="quote-small">
+                    InterviewSathi · Technical Practice
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# INTERVIEWS PAGE
+# =========================================================
+
 elif page == "Interviews" and not st.session_state.interview_started:
-    st.markdown('<div class="dashboard-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Interviews</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Pick a connected technical interview. The next question reacts to your previous answer.</div>', unsafe_allow_html=True)
 
-    selected_scenario = st.selectbox("Interview Type", scenario_names, index=scenario_names.index(st.session_state.selected_scenario) if st.session_state.selected_scenario in scenario_names else 0)
-    scenario = INTERVIEW_SCENARIOS[selected_scenario]
-    q_count = len(get_scenario_questions(selected_scenario))
+    st.markdown(
+        '<div class="dashboard-shell">',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-title">Interviews</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-subtitle">Pick a connected technical interview. The next question reacts to your previous answer.</div>',
+        unsafe_allow_html=True
+    )
+
+
+    selected_scenario = st.selectbox(
+        "Interview Type",
+        scenario_names,
+        index=(
+            scenario_names.index(
+                st.session_state.selected_scenario
+            )
+            if st.session_state.selected_scenario in scenario_names
+            else 0
+        )
+    )
+
+
+    scenario = INTERVIEW_SCENARIOS[
+        selected_scenario
+    ]
+
+
+    q_count = len(
+        get_scenario_questions(
+            selected_scenario
+        )
+    )
+
 
     c1, c2, c3 = st.columns(3)
-    with c1: st.metric("Area", scenario["area"])
-    with c2: st.metric("Level", scenario["level"])
-    with c3: st.metric("Questions", q_count)
 
-    st.markdown(f'<div class="case-card"><b>👤 {scenario["interviewer"]}</b> · {scenario["interviewer_title"]}<br><br>{scenario["intro"]}<br><br><span class="small-muted">Connected sequence: {" → ".join(scenario.get("topics", []))}</span></div>', unsafe_allow_html=True)
 
-    if st.button("🚀 Start Interview", use_container_width=True, type="primary"):
-        st.session_state.selected_scenario = selected_scenario
-        st.session_state.selected_area = scenario["area"]
-        st.session_state.selected_level = scenario["level"]
-        st.session_state.number_of_questions = q_count
-        st.session_state.selected_questions = get_scenario_questions(selected_scenario)
-        st.session_state.current_index = 0
-        st.session_state.answers = {}
-        st.session_state.evaluations = {}
-        st.session_state.answer_submitted = False
-        st.session_state.interviewer_reaction = ""
-        st.session_state.interview_started = True
-        st.session_state.interview_completed = False
-        st.session_state.usage_completed_tracked = False
-        track_event(
-            "interview_started",
-            scenario=st.session_state.selected_scenario,
-            area=st.session_state.selected_area,
-            level=st.session_state.selected_level,
-            questions=st.session_state.number_of_questions,
+    with c1:
+
+        st.metric(
+            "Area",
+            scenario["area"]
         )
+
+
+    with c2:
+
+        st.metric(
+            "Level",
+            scenario["level"]
+        )
+
+
+    with c3:
+
+        st.metric(
+            "Questions",
+            q_count
+        )
+
+
+    st.markdown(
+        f'''
+        <div class="case-card">
+            <b>👤 {scenario["interviewer"]}</b>
+            · {scenario["interviewer_title"]}
+
+            <br><br>
+
+            {scenario["intro"]}
+
+            <br><br>
+
+            <span class="small-muted">
+                Connected sequence:
+                {" → ".join(scenario.get("topics", []))}
+            </span>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
+
+
+    if st.button(
+        "🚀 Start Interview",
+        use_container_width=True,
+        type="primary"
+    ):
+
+        st.session_state.selected_scenario = selected_scenario
+
+        st.session_state.selected_area = scenario[
+            "area"
+        ]
+
+        st.session_state.selected_level = scenario[
+            "level"
+        ]
+
+        st.session_state.number_of_questions = q_count
+
+        st.session_state.selected_questions = (
+            get_scenario_questions(
+                selected_scenario
+            )
+        )
+
+        st.session_state.current_index = 0
+
+        st.session_state.answers = {}
+
+        st.session_state.evaluations = {}
+
+        st.session_state.answer_submitted = False
+
+        st.session_state.interviewer_reaction = ""
+
+        st.session_state.interview_started = True
+
+        st.session_state.interview_completed = False
+
+        st.session_state.usage_completed_tracked = False
+
+        # FIX:
+        # Use the same tracking function for starts from the Interviews page.
+        track_interview_started()
+
         st.session_state.voice_text_box_version = {}
+
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- ACTIVE INTERVIEW ----------
-elif page == "Interviews" and st.session_state.interview_started and not st.session_state.interview_completed:
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# ACTIVE INTERVIEW
+# =========================================================
+
+elif (
+    page == "Interviews"
+    and st.session_state.interview_started
+    and not st.session_state.interview_completed
+):
+
     questions = st.session_state.selected_questions
+
     current_index = st.session_state.current_index
-    total_questions = len(questions)
-    current_question = questions[current_index]
-    scenario = INTERVIEW_SCENARIOS[st.session_state.selected_scenario]
 
-    st.markdown('<div class="interview-shell">', unsafe_allow_html=True)
-    st.progress((current_index + 1) / total_questions, text=f"Question {current_index + 1} of {total_questions} · {scenario['area']}")
+    total_questions = len(
+        questions
+    )
 
-    reaction = st.session_state.get("interviewer_reaction", "")
-    note = reaction if current_index > 0 and reaction else (scenario["intro"] if current_index == 0 else "Good. Let’s go one level deeper.")
-    st.markdown(f"""
-    <div class="interviewer-card">
-        <span class="interviewer-avatar">👤</span>
-        <span class="interviewer-name">{scenario['interviewer']}</span><br>
-        <span class="interviewer-role">{scenario['interviewer_title']}</span>
-        <div class="interviewer-note">{note}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    current_question = questions[
+        current_index
+    ]
 
-    st.markdown(f"""
-    <div class="question-card">
-        <div class="question-label">Technical Question · {current_question.get('topic','Valuation')}</div>
-        <div class="question-text">{current_question['question']}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    scenario = INTERVIEW_SCENARIOS[
+        st.session_state.selected_scenario
+    ]
+
+
+    st.markdown(
+        '<div class="interview-shell">',
+        unsafe_allow_html=True
+    )
+
+
+    st.progress(
+        (current_index + 1) / total_questions,
+        text=(
+            f"Question {current_index + 1} "
+            f"of {total_questions} · "
+            f"{scenario['area']}"
+        )
+    )
+
+
+    reaction = st.session_state.get(
+        "interviewer_reaction",
+        ""
+    )
+
+
+    note = (
+        reaction
+        if current_index > 0 and reaction
+        else (
+            scenario["intro"]
+            if current_index == 0
+            else "Good. Let’s go one level deeper."
+        )
+    )
+
+
+    st.markdown(
+        f"""
+        <div class="interviewer-card">
+
+            <span class="interviewer-avatar">
+                👤
+            </span>
+
+            <span class="interviewer-name">
+                {scenario['interviewer']}
+            </span>
+
+            <br>
+
+            <span class="interviewer-role">
+                {scenario['interviewer_title']}
+            </span>
+
+            <div class="interviewer-note">
+                {note}
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        f"""
+        <div class="question-card">
+
+            <div class="question-label">
+                Technical Question ·
+                {current_question.get('topic','Valuation')}
+            </div>
+
+            <div class="question-text">
+                {current_question['question']}
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
     if not st.session_state.answer_submitted:
-        st.markdown("### 🎙️ Your Answer")
-        st.caption("Speak naturally. You can review and edit the transcription before submitting.")
+
+        st.markdown(
+            "### 🎙️ Your Answer"
+        )
+
+        st.caption(
+            "Speak naturally. You can review and edit the transcription before submitting."
+        )
+
+
         spoken_text = speech_to_text(
             language="en",
             start_prompt="🎙️ Start Recording",
             stop_prompt="⏹️ Stop Recording",
             just_once=True,
             use_container_width=True,
-            key=f"voice_{st.session_state.selected_scenario}_{current_index}"
+            key=(
+                f"voice_"
+                f"{st.session_state.selected_scenario}_"
+                f"{current_index}"
+            )
         )
+
+
         if spoken_text:
-            st.session_state.answers[current_index] = spoken_text
-            current_version = st.session_state.voice_text_box_version.get(current_index, 0)
-            st.session_state.voice_text_box_version[current_index] = current_version + 1
+
+            st.session_state.answers[
+                current_index
+            ] = spoken_text
+
+            current_version = (
+                st.session_state.voice_text_box_version.get(
+                    current_index,
+                    0
+                )
+            )
+
+            st.session_state.voice_text_box_version[
+                current_index
+            ] = current_version + 1
+
             st.rerun()
 
-    text_box_version = st.session_state.voice_text_box_version.get(current_index, 0)
-    current_answer = st.text_area(
-        "📝 Review & Edit",
-        value=st.session_state.answers.get(current_index, ""),
-        height=190,
-        placeholder="Type your answer or use the microphone above...",
-        key=f"answer_box_{current_index}_{text_box_version}"
+
+    text_box_version = (
+        st.session_state.voice_text_box_version.get(
+            current_index,
+            0
+        )
     )
 
-    if not st.session_state.answer_submitted:
-        if st.button("✅ Submit Answer", use_container_width=True, type="primary"):
-            if not current_answer.strip():
-                st.warning("Please provide an answer before submitting.")
-            else:
-                st.session_state.answers[current_index] = current_answer
-                rule_evaluation = evaluate_answer(current_question, current_answer)
-                rule_score = rule_evaluation["score"]
-                next_topic = None
-                if current_index < total_questions - 1:
-                    next_topic = questions[current_index + 1].get("topic")
 
-                with st.spinner("🤖 Interviewer is evaluating your answer..."):
+    current_answer = st.text_area(
+        "📝 Review & Edit",
+        value=st.session_state.answers.get(
+            current_index,
+            ""
+        ),
+        height=190,
+        placeholder=(
+            "Type your answer or use the microphone above..."
+        ),
+        key=(
+            f"answer_box_"
+            f"{current_index}_"
+            f"{text_box_version}"
+        )
+    )
+
+
+    if not st.session_state.answer_submitted:
+
+        if st.button(
+            "✅ Submit Answer",
+            use_container_width=True,
+            type="primary"
+        ):
+
+            if not current_answer.strip():
+
+                st.warning(
+                    "Please provide an answer before submitting."
+                )
+
+            else:
+
+                st.session_state.answers[
+                    current_index
+                ] = current_answer
+
+
+                rule_evaluation = evaluate_answer(
+                    current_question,
+                    current_answer
+                )
+
+
+                rule_score = rule_evaluation[
+                    "score"
+                ]
+
+
+                next_topic = None
+
+
+                if current_index < total_questions - 1:
+
+                    next_topic = questions[
+                        current_index + 1
+                    ].get("topic")
+
+
+                with st.spinner(
+                    "🤖 Interviewer is evaluating your answer..."
+                ):
+
                     ai_result = evaluate_with_gemini(
-                        question=current_question["question"],
+                        question=current_question[
+                            "question"
+                        ],
                         answer=current_answer,
                         level=st.session_state.selected_level,
                         area=st.session_state.selected_area,
@@ -1861,226 +2809,909 @@ elif page == "Interviews" and st.session_state.interview_started and not st.sess
                         next_topic=next_topic
                     )
 
-                final_score = ai_result["score"] if ai_result is not None else rule_score
-                interviewer_reaction = ""
-                if ai_result is not None:
-                    interviewer_reaction = str(ai_result.get("interviewer_reaction", "")).strip()
-                    generated_next = str(ai_result.get("next_question", "")).strip()
-                    if generated_next and current_index < total_questions - 1:
-                        next_q = dict(st.session_state.selected_questions[current_index + 1])
-                        next_q["question"] = generated_next
-                        st.session_state.selected_questions[current_index + 1] = next_q
 
-                st.session_state.interviewer_reaction = interviewer_reaction
-                st.session_state.evaluations[current_index] = {
+                final_score = (
+                    ai_result["score"]
+                    if ai_result is not None
+                    else rule_score
+                )
+
+
+                interviewer_reaction = ""
+
+
+                if ai_result is not None:
+
+                    interviewer_reaction = str(
+                        ai_result.get(
+                            "interviewer_reaction",
+                            ""
+                        )
+                    ).strip()
+
+
+                    generated_next = str(
+                        ai_result.get(
+                            "next_question",
+                            ""
+                        )
+                    ).strip()
+
+
+                    if (
+                        generated_next
+                        and current_index < total_questions - 1
+                    ):
+
+                        next_q = dict(
+                            st.session_state.selected_questions[
+                                current_index + 1
+                            ]
+                        )
+
+                        next_q["question"] = generated_next
+
+                        st.session_state.selected_questions[
+                            current_index + 1
+                        ] = next_q
+
+
+                st.session_state.interviewer_reaction = (
+                    interviewer_reaction
+                )
+
+
+                st.session_state.evaluations[
+                    current_index
+                ] = {
+
                     "score": final_score,
+
                     "rule_score": rule_score,
-                    "feedback": rule_evaluation["feedback"],
-                    "matched_keywords": rule_evaluation["matched_keywords"],
-                    "missing_keywords": rule_evaluation["missing_keywords"],
-                    "improvement": rule_evaluation["improvement"],
-                    "length_feedback": rule_evaluation["length_feedback"],
+
+                    "feedback": rule_evaluation[
+                        "feedback"
+                    ],
+
+                    "matched_keywords": rule_evaluation[
+                        "matched_keywords"
+                    ],
+
+                    "missing_keywords": rule_evaluation[
+                        "missing_keywords"
+                    ],
+
+                    "improvement": rule_evaluation[
+                        "improvement"
+                    ],
+
+                    "length_feedback": rule_evaluation[
+                        "length_feedback"
+                    ],
+
                     "ai_evaluation": ai_result,
                 }
+
+
                 st.session_state.answer_submitted = True
+
+
                 track_event(
                     "answer_submitted",
                     scenario=st.session_state.selected_scenario,
                     question_number=current_index + 1,
                     questions_total=total_questions,
                 )
+
+
                 st.rerun()
+
+
     else:
-        evaluation = st.session_state.evaluations[current_index]
-        score = evaluation["score"]
-        ai_result = evaluation.get("ai_evaluation")
-        reaction_text = (ai_result or {}).get("interviewer_reaction", "") or evaluation["feedback"]
-        feedback_text = (ai_result or {}).get("overall_feedback", evaluation["feedback"])
-        st.markdown(f"<div class='reaction-card'><span class='score-pill'>🎯 {score}/10</span><br><br><b>Interviewer</b><br>{reaction_text}<br><br><b>Feedback</b><br>{feedback_text}</div>", unsafe_allow_html=True)
+
+        evaluation = st.session_state.evaluations[
+            current_index
+        ]
+
+        score = evaluation[
+            "score"
+        ]
+
+        ai_result = evaluation.get(
+            "ai_evaluation"
+        )
+
+
+        reaction_text = (
+            (ai_result or {}).get(
+                "interviewer_reaction",
+                ""
+            )
+            or evaluation["feedback"]
+        )
+
+
+        feedback_text = (
+            (ai_result or {}).get(
+                "overall_feedback",
+                evaluation["feedback"]
+            )
+        )
+
+
+        st.markdown(
+            f"""
+            <div class='reaction-card'>
+
+                <span class='score-pill'>
+                    🎯 {score}/10
+                </span>
+
+                <br><br>
+
+                <b>Interviewer</b>
+
+                <br>
+
+                {reaction_text}
+
+                <br><br>
+
+                <b>Feedback</b>
+
+                <br>
+
+                {feedback_text}
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 
         if current_index < total_questions - 1:
-            if st.button("➡️ Continue Interview", use_container_width=True, type="primary"):
+
+            if st.button(
+                "➡️ Continue Interview",
+                use_container_width=True,
+                type="primary"
+            ):
+
                 st.session_state.current_index += 1
+
                 st.session_state.answer_submitted = False
+
                 st.session_state.interviewer_reaction = ""
+
                 st.rerun()
+
+
         else:
-            st.success("You have completed all interview questions.")
-            if st.button("🏁 Finish & See Interviewer Report", use_container_width=True, type="primary"):
+
+            st.success(
+                "You have completed all interview questions."
+            )
+
+
+            if st.button(
+                "🏁 Finish & See Interviewer Report",
+                use_container_width=True,
+                type="primary"
+            ):
+
                 st.session_state.interview_completed = True
+
+
                 if not st.session_state.usage_completed_tracked:
+
                     track_event(
                         "interview_completed",
                         scenario=st.session_state.selected_scenario,
                         area=st.session_state.selected_area,
                         level=st.session_state.selected_level,
-                        questions=len(st.session_state.evaluations),
+                        questions=len(
+                            st.session_state.evaluations
+                        ),
                     )
-                    st.session_state.usage_completed_tracked = True
-                scores = [x["score"] for x in st.session_state.evaluations.values()]
-                overall = round(sum(scores) / len(scores), 1) if scores else 0
-                st.session_state.history.append({
-                    "scenario": st.session_state.selected_scenario,
-                    "score": overall,
-                    "questions": len(scores),
-                })
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- FINAL REPORT ----------
-elif page == "Interviews" and st.session_state.interview_completed:
-    evaluations = st.session_state.evaluations
-    scenario = INTERVIEW_SCENARIOS[st.session_state.selected_scenario]
-    st.markdown('<div class="interview-shell">', unsafe_allow_html=True)
-    st.subheader("🏆 Interviewer Report")
-    st.caption(f"{st.session_state.selected_scenario} · {scenario['level']}")
+                    st.session_state.usage_completed_tracked = True
+
+
+                scores = [
+                    x["score"]
+                    for x in st.session_state.evaluations.values()
+                ]
+
+
+                overall = (
+                    round(
+                        sum(scores) / len(scores),
+                        1
+                    )
+                    if scores
+                    else 0
+                )
+
+
+                st.session_state.history.append(
+                    {
+                        "scenario": st.session_state.selected_scenario,
+                        "score": overall,
+                        "questions": len(scores),
+                    }
+                )
+
+
+                st.rerun()
+
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# FINAL REPORT
+# =========================================================
+
+elif (
+    page == "Interviews"
+    and st.session_state.interview_completed
+):
+
+    evaluations = (
+        st.session_state.evaluations
+    )
+
+    scenario = INTERVIEW_SCENARIOS[
+        st.session_state.selected_scenario
+    ]
+
+
+    st.markdown(
+        '<div class="interview-shell">',
+        unsafe_allow_html=True
+    )
+
+
+    st.subheader(
+        "🏆 Interviewer Report"
+    )
+
+
+    st.caption(
+        f"{st.session_state.selected_scenario} · "
+        f"{scenario['level']}"
+    )
+
 
     if evaluations:
-        scores = [item["score"] for item in evaluations.values()]
-        overall_score = round(sum(scores) / len(scores), 1)
-        strong_answers = sum(1 for score in scores if score >= 7)
-        st.markdown(f"""
-        <div class="final-card">
-            <div class="small-muted">OVERALL INTERVIEW SCORE</div>
-            <div class="score-pill">{overall_score}/10</div>
-            <p>Based on {len(scores)} technical responses.</p>
-        </div>
-        """, unsafe_allow_html=True)
+
+        scores = [
+            item["score"]
+            for item in evaluations.values()
+        ]
+
+
+        overall_score = round(
+            sum(scores) / len(scores),
+            1
+        )
+
+
+        strong_answers = sum(
+            1
+            for score in scores
+            if score >= 7
+        )
+
+
+        st.markdown(
+            f"""
+            <div class="final-card">
+
+                <div class="small-muted">
+                    OVERALL INTERVIEW SCORE
+                </div>
+
+                <div class="score-pill">
+                    {overall_score}/10
+                </div>
+
+                <p>
+                    Based on {len(scores)}
+                    technical responses.
+                </p>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 
         col1, col2, col3 = st.columns(3)
-        with col1: st.metric("Overall Score", f"{overall_score}/10")
-        with col2: st.metric("Questions", len(scores))
-        with col3: st.metric("Strong Answers", strong_answers)
 
-        all_ai = [e.get("ai_evaluation") for e in evaluations.values() if e.get("ai_evaluation")]
-        strengths, improvements = [], []
+
+        with col1:
+
+            st.metric(
+                "Overall Score",
+                f"{overall_score}/10"
+            )
+
+
+        with col2:
+
+            st.metric(
+                "Questions",
+                len(scores)
+            )
+
+
+        with col3:
+
+            st.metric(
+                "Strong Answers",
+                strong_answers
+            )
+
+
+        all_ai = [
+            e.get("ai_evaluation")
+            for e in evaluations.values()
+            if e.get("ai_evaluation")
+        ]
+
+
+        strengths = []
+
+        improvements = []
+
+
         for item in all_ai:
-            strengths.extend(item.get("strengths", []))
-            improvements.extend(item.get("areas_to_improve", []))
-        if strengths:
-            st.subheader("🟢 What You Did Well")
-            for item in list(dict.fromkeys(strengths))[:5]: st.write(f"• {item}")
-        if improvements:
-            st.subheader("🎯 Focus Areas")
-            for item in list(dict.fromkeys(improvements))[:5]: st.write(f"• {item}")
 
-        st.subheader("📋 Question-by-Question Review")
+            strengths.extend(
+                item.get(
+                    "strengths",
+                    []
+                )
+            )
+
+            improvements.extend(
+                item.get(
+                    "areas_to_improve",
+                    []
+                )
+            )
+
+
+        if strengths:
+
+            st.subheader(
+                "🟢 What You Did Well"
+            )
+
+            for item in list(
+                dict.fromkeys(
+                    strengths
+                )
+            )[:5]:
+
+                st.write(
+                    f"• {item}"
+                )
+
+
+        if improvements:
+
+            st.subheader(
+                "🎯 Focus Areas"
+            )
+
+            for item in list(
+                dict.fromkeys(
+                    improvements
+                )
+            )[:5]:
+
+                st.write(
+                    f"• {item}"
+                )
+
+
+        st.subheader(
+            "📋 Question-by-Question Review"
+        )
+
+
         for index, evaluation in evaluations.items():
-            question = st.session_state.selected_questions[index]["question"]
-            score = evaluation["score"]
-            with st.expander(f"Q{index + 1} — {score}/10"):
-                st.write(f"**Question:** {question}")
-                st.write("**Your Answer:**")
-                st.write(st.session_state.answers.get(index, ""))
-                ai_result = evaluation.get("ai_evaluation")
+
+            question = (
+                st.session_state.selected_questions[
+                    index
+                ]["question"]
+            )
+
+            score = evaluation[
+                "score"
+            ]
+
+
+            with st.expander(
+                f"Q{index + 1} — {score}/10"
+            ):
+
+                st.write(
+                    f"**Question:** {question}"
+                )
+
+                st.write(
+                    "**Your Answer:**"
+                )
+
+                st.write(
+                    st.session_state.answers.get(
+                        index,
+                        ""
+                    )
+                )
+
+
+                ai_result = evaluation.get(
+                    "ai_evaluation"
+                )
+
+
                 if ai_result:
-                    st.write("**Interviewer Feedback:**")
-                    st.write(ai_result.get("overall_feedback", ""))
-                    st.write("**Model Answer:**")
-                    st.info(ai_result.get("model_answer", ""))
+
+                    st.write(
+                        "**Interviewer Feedback:**"
+                    )
+
+                    st.write(
+                        ai_result.get(
+                            "overall_feedback",
+                            ""
+                        )
+                    )
+
+
+                    st.write(
+                        "**Model Answer:**"
+                    )
+
+                    st.info(
+                        ai_result.get(
+                            "model_answer",
+                            ""
+                        )
+                    )
+
+
                 else:
-                    st.write("**Feedback:**")
-                    st.write(evaluation["feedback"])
+
+                    st.write(
+                        "**Feedback:**"
+                    )
+
+                    st.write(
+                        evaluation["feedback"]
+                    )
+
 
     st.divider()
-    if st.button("🔄 Back to Dashboard", use_container_width=True):
+
+
+    if st.button(
+        "🔄 Back to Dashboard",
+        use_container_width=True
+    ):
+
         st.session_state.interview_started = False
+
         st.session_state.interview_completed = False
+
         st.session_state.selected_questions = []
+
         st.session_state.current_index = 0
+
         st.session_state.answers = {}
+
         st.session_state.evaluations = {}
+
         st.session_state.answer_submitted = False
+
         st.session_state.voice_text_box_version = {}
+
         st.session_state.interviewer_reaction = ""
+
         st.session_state.page = "Home"
+
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- ANALYTICS ----------
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# ANALYTICS
+# =========================================================
+
 elif page == "Analytics":
-    st.markdown('<div class="dashboard-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Analytics</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Simple anonymous usage tracking for InterviewSathi.</div>', unsafe_allow_html=True)
 
-    admin_password = st.secrets.get("ADMIN_PASSWORD", "") if hasattr(st, "secrets") else ""
-    entered_password = st.text_input("Admin password", type="password")
+    st.markdown(
+        '<div class="dashboard-shell">',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-title">Analytics</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-subtitle">Simple anonymous usage tracking for InterviewSathi.</div>',
+        unsafe_allow_html=True
+    )
+
+
+    admin_password = (
+        st.secrets.get(
+            "ADMIN_PASSWORD",
+            ""
+        )
+        if hasattr(st, "secrets")
+        else ""
+    )
+
+
+    entered_password = st.text_input(
+        "Admin password",
+        type="password"
+    )
+
 
     if not admin_password:
-        st.warning("Set ADMIN_PASSWORD in Streamlit Secrets to enable this page.")
+
+        st.warning(
+            "Set ADMIN_PASSWORD in Streamlit Secrets to enable this page."
+        )
+
+
     elif entered_password != admin_password:
-        st.info("Enter the admin password to view usage.")
+
+        st.info(
+            "Enter the admin password to view usage."
+        )
+
+
     else:
+
         rows = []
-        if os.path.exists(TRACKING_FILE):
+
+
+        if os.path.exists(
+            TRACKING_FILE
+        ):
+
             try:
-                with open(TRACKING_FILE, "r", newline="", encoding="utf-8") as f:
-                    rows = list(csv.DictReader(f))
+
+                with open(
+                    TRACKING_FILE,
+                    "r",
+                    newline="",
+                    encoding="utf-8"
+                ) as f:
+
+                    rows = list(
+                        csv.DictReader(f)
+                    )
+
             except Exception:
+
                 rows = []
 
-        visitors = {r.get("visitor_id") for r in rows if r.get("visitor_id")}
-        started = [r for r in rows if r.get("event") == "interview_started"]
-        completed = [r for r in rows if r.get("event") == "interview_completed"]
-        last_activity = rows[-1].get("timestamp_utc", "") if rows else "No activity yet"
+
+        visitors = {
+            r.get("visitor_id")
+            for r in rows
+            if r.get("visitor_id")
+        }
+
+
+        started = [
+            r
+            for r in rows
+            if r.get("event")
+            == "interview_started"
+        ]
+
+
+        completed = [
+            r
+            for r in rows
+            if r.get("event")
+            == "interview_completed"
+        ]
+
+
+        last_activity = (
+            rows[-1].get(
+                "timestamp_utc",
+                ""
+            )
+            if rows
+            else "No activity yet"
+        )
+
 
         m1, m2, m3, m4 = st.columns(4)
-        with m1:
-            st.metric("Visitors", len(visitors))
-        with m2:
-            st.metric("Interviews Started", len(started))
-        with m3:
-            st.metric("Interviews Completed", len(completed))
-        with m4:
-            rate = round(len(completed) / len(started) * 100, 1) if started else 0
-            st.metric("Completion Rate", f"{rate}%")
 
-        st.caption(f"Last activity (UTC): {last_activity}")
+
+        with m1:
+
+            st.metric(
+                "Visitors",
+                len(visitors)
+            )
+
+
+        with m2:
+
+            st.metric(
+                "Interviews Started",
+                len(started)
+            )
+
+
+        with m3:
+
+            st.metric(
+                "Interviews Completed",
+                len(completed)
+            )
+
+
+        with m4:
+
+            rate = (
+                round(
+                    len(completed)
+                    / len(started)
+                    * 100,
+                    1
+                )
+                if started
+                else 0
+            )
+
+
+            st.metric(
+                "Completion Rate",
+                f"{rate}%"
+            )
+
+
+        st.caption(
+            f"Last activity (UTC): {last_activity}"
+        )
+
 
         if started:
-            st.subheader("Recent Interviews Started")
+
+            st.subheader(
+                "Recent Interviews Started"
+            )
+
+
             recent = []
+
+
             for r in started[-10:][::-1]:
-                recent.append({
-                    "Time (UTC)": r.get("timestamp_utc", ""),
-                    "Level": r.get("level", ""),
-                    "Area": r.get("area", ""),
-                    "Interview": r.get("scenario", ""),
-                    "Questions": r.get("questions", ""),
-                })
-            st.dataframe(recent, use_container_width=True, hide_index=True)
+
+                recent.append(
+                    {
+                        "Time (UTC)": r.get(
+                            "timestamp_utc",
+                            ""
+                        ),
+
+                        "Level": r.get(
+                            "level",
+                            ""
+                        ),
+
+                        "Area": r.get(
+                            "area",
+                            ""
+                        ),
+
+                        "Interview": r.get(
+                            "scenario",
+                            ""
+                        ),
+
+                        "Questions": r.get(
+                            "questions",
+                            ""
+                        ),
+                    }
+                )
+
+
+            st.dataframe(
+                recent,
+                use_container_width=True,
+                hide_index=True
+            )
+
+
         else:
-            st.info("No interviews have been started yet.")
 
-        st.caption("Tracking is anonymous; no visitor names are collected.")
+            st.info(
+                "No interviews have been started yet."
+            )
 
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- PERFORMANCE ----------
+        st.caption(
+            "Tracking is anonymous; no visitor names are collected."
+        )
+
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# PERFORMANCE
+# =========================================================
+
 elif page == "Performance":
-    history = st.session_state.history
-    st.markdown('<div class="dashboard-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Performance</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Your completed InterviewSathi sessions.</div>', unsafe_allow_html=True)
-    if not history:
-        st.info("Complete your first interview to start building your performance history.")
-    else:
-        scores = [x["score"] for x in history]
-        a,b,c = st.columns(3)
-        with a: st.metric("Interviews", len(history))
-        with b: st.metric("Average Score", f"{round(sum(scores)/len(scores),1)}/10")
-        with c: st.metric("Latest Score", f"{scores[-1]}/10")
-        st.markdown("### Recent Sessions")
-        for item in history[::-1]:
-            st.markdown(f"<div class='recent-card'><b>{item['scenario']}</b><br><span class='small-muted'>{item['questions']} questions · Score {item['score']}/10</span></div><br>", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- SETTINGS ----------
+    history = st.session_state.history
+
+
+    st.markdown(
+        '<div class="dashboard-shell">',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-title">Performance</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-subtitle">Your completed InterviewSathi sessions.</div>',
+        unsafe_allow_html=True
+    )
+
+
+    if not history:
+
+        st.info(
+            "Complete your first interview to start building your performance history."
+        )
+
+
+    else:
+
+        scores = [
+            x["score"]
+            for x in history
+        ]
+
+
+        a, b, c = st.columns(3)
+
+
+        with a:
+
+            st.metric(
+                "Interviews",
+                len(history)
+            )
+
+
+        with b:
+
+            st.metric(
+                "Average Score",
+                f"{round(sum(scores)/len(scores),1)}/10"
+            )
+
+
+        with c:
+
+            st.metric(
+                "Latest Score",
+                f"{scores[-1]}/10"
+            )
+
+
+        st.markdown(
+            "### Recent Sessions"
+        )
+
+
+        for item in history[::-1]:
+
+            st.markdown(
+                f"""
+                <div class='recent-card'>
+                    <b>{item['scenario']}</b>
+                    <br>
+                    <span class='small-muted'>
+                        {item['questions']} questions ·
+                        Score {item['score']}/10
+                    </span>
+                </div>
+                <br>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# SETTINGS
+# =========================================================
+
 elif page == "Settings":
-    st.markdown('<div class="dashboard-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Settings</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-subtitle">Simple preferences for the interview experience.</div>', unsafe_allow_html=True)
-    st.checkbox("Show detailed technical feedback", value=True, disabled=True)
-    st.checkbox("Use microphone when available", value=True, disabled=True)
-    st.info("More personalization options can be added later as InterviewSathi grows.")
-    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="dashboard-shell">',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-title">Settings</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-subtitle">Simple preferences for the interview experience.</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.checkbox(
+        "Show detailed technical feedback",
+        value=True,
+        disabled=True
+    )
+
+
+    st.checkbox(
+        "Use microphone when available",
+        value=True,
+        disabled=True
+    )
+
+
+    st.info(
+        "More personalization options can be added later as InterviewSathi grows."
+    )
+
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
