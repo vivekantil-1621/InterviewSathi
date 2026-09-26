@@ -2101,6 +2101,18 @@ if (
     )
 
     st.write("TEST VERSION 123")
+    st.html("""
+<div style="
+    padding: 30px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+">
+    HTML TEST — InterviewSathi
+</div>
+""")
     st.markdown(
         """
         <div class="hero-dashboard">
