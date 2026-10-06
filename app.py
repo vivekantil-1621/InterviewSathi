@@ -2,9 +2,8 @@ import streamlit as st
 import random
 import re
 import json
-import os
-import csv
 import uuid
+import requests
 from datetime import datetime, timezone
 
 from google import genai
@@ -1922,8 +1921,31 @@ def get_scenario_questions(scenario_name):
 # =========================================================
 # ANONYMOUS USAGE TRACKING
 # =========================================================
+# Persistent analytics are stored in Supabase.
+# Add SUPABASE_URL and SUPABASE_KEY to Streamlit Secrets.
+# The Supabase key is used server-side for anonymous analytics.
 
-TRACKING_FILE = "usage_events.csv"
+SUPABASE_URL = ""
+SUPABASE_KEY = ""
+
+try:
+
+    SUPABASE_URL = st.secrets.get(
+        "SUPABASE_URL",
+        "",
+    ).strip().rstrip("/")
+
+    SUPABASE_KEY = st.secrets.get(
+        "SUPABASE_KEY",
+        "",
+    ).strip()
+
+except Exception:
+
+    pass
+
+
+SUPABASE_TABLE = "usage_events"
 
 
 def get_visitor_id():
@@ -1937,53 +1959,109 @@ def get_visitor_id():
     return st.session_state.visitor_id
 
 
+def supabase_headers():
+
+    return {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal",
+    }
+
+
+def supabase_configured():
+
+    return bool(
+        SUPABASE_URL
+        and SUPABASE_KEY
+    )
+
+
 def track_event(
     event_name,
     **details,
 ):
 
+    if not supabase_configured():
+        return False
+
+    row = {
+        "timestamp_utc": datetime.now(
+            timezone.utc
+        ).isoformat(),
+
+        "visitor_id": get_visitor_id(),
+
+        "event": event_name,
+
+        "scenario": details.get("scenario"),
+
+        "area": details.get("area"),
+
+        "level": details.get("level"),
+
+        "questions": details.get("questions"),
+
+        "question_number": details.get("question_number"),
+    }
+
     try:
 
-        row = {
-            "timestamp_utc": datetime.now(
-                timezone.utc
-            ).isoformat(),
-
-            "visitor_id": get_visitor_id(),
-
-            "event": event_name,
-
-            **details,
-        }
-
-        file_exists = os.path.exists(
-            TRACKING_FILE
+        response = requests.post(
+            f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}",
+            headers=supabase_headers(),
+            json=row,
+            timeout=8,
         )
 
-        with open(
-            TRACKING_FILE,
-            "a",
-            newline="",
-            encoding="utf-8",
-        ) as f:
+        response.raise_for_status()
 
-            writer = csv.DictWriter(
-                f,
-                fieldnames=row.keys(),
-            )
-
-            if not file_exists:
-                writer.writeheader()
-
-            writer.writerow(row)
+        return True
 
     except Exception:
-        pass
+
+        # Analytics must never interrupt an interview.
+        return False
+
+
+def get_usage_events():
+
+    if not supabase_configured():
+        return []
+
+    try:
+
+        response = requests.get(
+            f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}",
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+            },
+            params={
+                "select": (
+                    "timestamp_utc,visitor_id,event,"
+                    "scenario,area,level,questions,question_number"
+                ),
+                "order": "timestamp_utc.asc",
+                "limit": "10000",
+            },
+            timeout=8,
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return data if isinstance(data, list) else []
+
+    except Exception:
+
+        return []
 
 
 def track_interview_started():
 
-    track_event(
+    return track_event(
         "interview_started",
 
         scenario=(
@@ -3488,157 +3566,144 @@ elif page == "Analytics":
 
     else:
 
-        rows = []
+        if not supabase_configured():
 
-        if os.path.exists(
-            TRACKING_FILE
-        ):
-
-            try:
-
-                with open(
-                    TRACKING_FILE,
-                    "r",
-                    newline="",
-                    encoding="utf-8",
-                ) as f:
-
-                    rows = list(
-                        csv.DictReader(f)
-                    )
-
-            except Exception:
-
-                rows = []
-
-        visitors = {
-            r.get("visitor_id")
-            for r in rows
-            if r.get("visitor_id")
-        }
-
-        started = [
-            r
-            for r in rows
-            if r.get("event")
-            == "interview_started"
-        ]
-
-        completed = [
-            r
-            for r in rows
-            if r.get("event")
-            == "interview_completed"
-        ]
-
-        last_activity = (
-            rows[-1].get(
-                "timestamp_utc",
-                "",
-            )
-            if rows
-            else "No activity yet"
-        )
-
-        m1, m2, m3, m4 = st.columns(4)
-
-        with m1:
-
-            st.metric(
-                "Visitors",
-                len(visitors),
-            )
-
-        with m2:
-
-            st.metric(
-                "Interviews Started",
-                len(started),
-            )
-
-        with m3:
-
-            st.metric(
-                "Interviews Completed",
-                len(completed),
-            )
-
-        with m4:
-
-            rate = (
-                round(
-                    len(completed)
-                    / len(started)
-                    * 100,
-                    1,
-                )
-                if started
-                else 0
-            )
-
-            st.metric(
-                "Completion Rate",
-                f"{rate}%",
-            )
-
-        st.caption(
-            f"Last activity (UTC): {last_activity}"
-        )
-
-        if started:
-
-            st.subheader(
-                "Recent Interviews Started"
-            )
-
-            recent = []
-
-            for r in started[-10:][::-1]:
-
-                recent.append(
-                    {
-                        "Time (UTC)": r.get(
-                            "timestamp_utc",
-                            "",
-                        ),
-
-                        "Level": r.get(
-                            "level",
-                            "",
-                        ),
-
-                        "Area": r.get(
-                            "area",
-                            "",
-                        ),
-
-                        "Interview": r.get(
-                            "scenario",
-                            "",
-                        ),
-
-                        "Questions": r.get(
-                            "questions",
-                            "",
-                        ),
-                    }
-                )
-
-            st.dataframe(
-                recent,
-                use_container_width=True,
-                hide_index=True,
+            st.error(
+                "Persistent analytics are not configured. Add SUPABASE_URL and SUPABASE_KEY to Streamlit Secrets."
             )
 
         else:
 
-            st.info(
-                "No interviews have been started yet."
+            rows = get_usage_events()
+
+            visitors = {
+                r.get("visitor_id")
+                for r in rows
+                if r.get("visitor_id")
+            }
+
+            started = [
+                r
+                for r in rows
+                if r.get("event")
+                == "interview_started"
+            ]
+
+            completed = [
+                r
+                for r in rows
+                if r.get("event")
+                == "interview_completed"
+            ]
+
+            last_activity = (
+                rows[-1].get(
+                    "timestamp_utc",
+                    "",
+                )
+                if rows
+                else "No activity yet"
             )
 
-        st.caption(
-            "Tracking is anonymous; no visitor names are collected."
-        )
+            m1, m2, m3, m4 = st.columns(4)
+
+            with m1:
+
+                st.metric(
+                    "Visitors",
+                    len(visitors),
+                )
+
+            with m2:
+
+                st.metric(
+                    "Interviews Started",
+                    len(started),
+                )
+
+            with m3:
+
+                st.metric(
+                    "Interviews Completed",
+                    len(completed),
+                )
+
+            with m4:
+
+                rate = (
+                    round(
+                        len(completed)
+                        / len(started)
+                        * 100,
+                        1,
+                    )
+                    if started
+                    else 0
+                )
+
+                st.metric(
+                    "Completion Rate",
+                    f"{rate}%",
+                )
+
+            st.caption(
+                f"Last activity (UTC): {last_activity}"
+            )
+
+            if started:
+
+                st.subheader(
+                    "Recent Interviews Started"
+                )
+
+                recent = []
+
+                for r in started[-10:][::-1]:
+
+                    recent.append(
+                        {
+                            "Time (UTC)": r.get(
+                                "timestamp_utc",
+                                "",
+                            ),
+
+                            "Level": r.get(
+                                "level",
+                                "",
+                            ),
+
+                            "Area": r.get(
+                                "area",
+                                "",
+                            ),
+
+                            "Interview": r.get(
+                                "scenario",
+                                "",
+                            ),
+
+                            "Questions": r.get(
+                                "questions",
+                                "",
+                            ),
+                        }
+                    )
+
+                st.dataframe(
+                    recent,
+                    use_container_width=True,
+                    hide_index=True,
+                )
+
+            else:
+
+                st.info(
+                    "No interviews have been started yet."
+                )
+
+            st.caption(
+                "Tracking is anonymous; no visitor names are collected."
+            )
 
     st.html(
         '</div>'
