@@ -1317,64 +1317,54 @@ def evaluate_answer(question_data, answer):
         1,
     )
 
+    # Feedback must point to actual concepts found/missed, never praise generically.
+    matched_text = ", ".join(matched[:4]) if matched else "no key concepts clearly demonstrated"
+    missing_text = ", ".join(missing[:5]) if missing else "no major keyword gaps identified by the basic checker"
+
     if final_score >= 8.5:
-
         feedback = (
-            "Excellent answer. You covered the major concepts "
-            "and demonstrated strong technical understanding."
+            f"Strong coverage of {matched_text}. Check the technical details below "
+            "for any remaining nuance; the keyword check alone cannot confirm full accuracy."
         )
-
         improvement = (
-            "Focus on making the answer even more concise "
-            "and interview-ready."
+            f"To strengthen the answer further, explicitly address any relevant gaps such as: {missing_text}. "
+            "Use a brief explanation or example where useful."
         )
-
     elif final_score >= 7:
-
         feedback = (
-            "Strong answer. You covered most of the important "
-            "technical concepts."
+            f"You addressed {matched_text}, but the answer may not fully cover the question. "
+            f"Concepts to verify or add: {missing_text}."
         )
-
         improvement = (
-            "Add more depth and practical reasoning to "
-            "strengthen the answer."
+            f"Explain the missing or underdeveloped concepts—especially {missing_text}—and connect them "
+            "to the valuation question rather than listing terms."
         )
-
     elif final_score >= 5.5:
-
         feedback = (
-            "Good foundation, but the answer could be more "
-            "complete and structured."
+            f"The answer demonstrates some relevant understanding ({matched_text}), "
+            f"but important areas may be absent: {missing_text}."
         )
-
         improvement = (
-            "Cover the missing concepts and explain why "
-            "they matter in an actual valuation."
+            f"Rebuild the answer around the core definition, method and assumptions. "
+            f"Then address: {missing_text}."
         )
-
     elif final_score >= 4:
-
         feedback = (
-            "Partial answer. Some relevant concepts are present, "
-            "but important technical areas are missing."
+            f"Only partial coverage was detected ({matched_text}). "
+            f"The main gaps to review are: {missing_text}."
         )
-
         improvement = (
-            "Structure the answer clearly and address "
-            "the major valuation concepts."
+            f"Start with a precise definition, explain the key steps, and cover {missing_text}. "
+            "Add a practical valuation example if appropriate."
         )
-
     else:
-
         feedback = (
-            "The answer needs significant improvement "
-            "from a technical perspective."
+            f"The response does not yet demonstrate the core concepts clearly. "
+            f"Review these areas first: {missing_text}."
         )
-
         improvement = (
-            "Start with the core definition, then explain "
-            "the methodology and key assumptions."
+            f"Give a direct definition, explain the methodology in sequence, and then apply it. "
+            f"Begin by learning: {missing_text}."
         )
 
     if word_count < 25:
@@ -1441,8 +1431,22 @@ Interview Question:
 Candidate Answer:
 {answer}
 
-Existing rule-based score:
+Existing rule-based score (a rough signal only; do not copy it blindly):
 {rule_score}/10
+
+NON-NEGOTIABLE: SPECIFIC, EVIDENCE-BASED FEEDBACK
+- Do not use generic praise such as "Excellent answer", "Strong answer", "Good understanding" or "covered the major concepts" unless immediately supported by specific evidence from this answer.
+- Never repeat the same sentence in interviewer_reaction and overall_feedback. These fields have different jobs.
+- Identify what the candidate actually explained correctly, what is missing, and any technical error or imprecision. Quote or paraphrase the relevant part of the candidate's answer when useful.
+- Treat the question as the grading rubric: identify 2-5 essential concepts a competent answer to THIS question should cover, then compare the response with those concepts. Do not rely on the broad topic list or the rule-based score as the rubric.
+- If the answer is vague, say exactly what is vague and what detail should have been provided. If it is wrong, explain the correction. If it is genuinely complete, explain specifically why and identify only meaningful refinements. Do not invent gaps.
+- areas_to_improve must contain concrete, question-specific omissions, weak explanations, or corrections—not generic advice like "add more detail". If there are no material gaps, state that clearly and provide one useful refinement.
+- strengths must refer to specific content actually present in the answer. Never fill the list with generic compliments.
+- overall_feedback: 2-4 sentences, including at least one specific strength or gap and the reason it matters.
+- technical_accuracy: explicitly classify the answer as accurate, partly accurate, inaccurate, or too vague to assess, and explain why.
+- how_to_improve: tell the candidate what to say/add next time, using the actual topic and gaps.
+- interviewer_reaction: one short natural spoken sentence only; acknowledge a specific point or ask/probe the relevant gap. Do not give a second overall assessment here.
+- If the candidate gives a very short answer, do not assume understanding they have not demonstrated. Score only demonstrated knowledge.
 
 IMPORTANT EVALUATION PRINCIPLES:
 
@@ -1597,13 +1601,13 @@ Requirements:
 
 score must be a number between 0 and 10
 
-overall_feedback should be professional interview feedback
+overall_feedback must be specific to this exact question and answer, not generic praise
 
-technical_accuracy should explain whether the technical concepts are correct
+technical_accuracy must classify correctness and explain the evidence
 
-strengths should contain 2 to 4 concise points
+strengths should contain 1 to 3 concise points grounded in the candidate's actual answer
 
-areas_to_improve should contain 2 to 4 concise points
+areas_to_improve should contain 1 to 4 specific gaps/corrections grounded in the question; do not invent gaps
 
 how_to_improve should provide practical interview advice
 
@@ -1921,116 +1925,82 @@ def get_scenario_questions(scenario_name):
 # =========================================================
 # ANONYMOUS USAGE TRACKING
 # =========================================================
-# Persistent analytics are stored in Supabase.
-# Add SUPABASE_URL and SUPABASE_KEY to Streamlit Secrets.
-# The Supabase key is used server-side for anonymous analytics.
+# Configure SUPABASE_URL and SUPABASE_KEY in Streamlit Secrets.
+# For a private admin dashboard, use a server-side secret/service-role key
+# stored only in Streamlit Secrets, never in client-side code or GitHub.
 
 SUPABASE_URL = ""
 SUPABASE_KEY = ""
 
 try:
-
-    SUPABASE_URL = st.secrets.get(
-        "SUPABASE_URL",
-        "",
-    ).strip().rstrip("/")
-
-    SUPABASE_KEY = st.secrets.get(
-        "SUPABASE_KEY",
-        "",
-    ).strip()
-
+    SUPABASE_URL = str(st.secrets.get("SUPABASE_URL", "")).strip().rstrip("/")
+    SUPABASE_KEY = str(st.secrets.get("SUPABASE_KEY", "")).strip()
 except Exception:
-
     pass
-
 
 SUPABASE_TABLE = "usage_events"
 
 
 def get_visitor_id():
-
+    """A session identifier, not a guaranteed cross-session person identifier."""
     if "visitor_id" not in st.session_state:
-
-        st.session_state.visitor_id = str(
-            uuid.uuid4()
-        )
-
+        st.session_state.visitor_id = str(uuid.uuid4())
     return st.session_state.visitor_id
 
 
-def supabase_headers():
-
-    return {
+def supabase_headers(return_rows=False):
+    headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
         "Content-Type": "application/json",
-        "Prefer": "return=minimal",
     }
+    headers["Prefer"] = "return=representation" if return_rows else "return=minimal"
+    return headers
 
 
 def supabase_configured():
-
-    return bool(
-        SUPABASE_URL
-        and SUPABASE_KEY
-    )
+    return bool(SUPABASE_URL and SUPABASE_KEY)
 
 
-def track_event(
-    event_name,
-    **details,
-):
-
+def track_event(event_name, **details):
+    """Write one event. Failure is non-fatal but retained for admin diagnostics."""
     if not supabase_configured():
+        st.session_state["analytics_last_write_error"] = "Supabase is not configured"
         return False
 
     row = {
-        "timestamp_utc": datetime.now(
-            timezone.utc
-        ).isoformat(),
-
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "visitor_id": get_visitor_id(),
-
-        "event": event_name,
-
+        "event": str(event_name),
+        "interview_id": details.get("interview_id") or st.session_state.get("interview_id"),
         "scenario": details.get("scenario"),
-
         "area": details.get("area"),
-
         "level": details.get("level"),
-
-        "questions": details.get("questions"),
-
+        "questions": details.get("questions", details.get("questions_total")),
         "question_number": details.get("question_number"),
     }
-
     try:
-
         response = requests.post(
             f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}",
             headers=supabase_headers(),
             json=row,
             timeout=8,
         )
-
         response.raise_for_status()
-
+        st.session_state["analytics_last_write_error"] = ""
+        st.session_state["analytics_last_write_ok"] = datetime.now(timezone.utc).isoformat()
         return True
-
-    except Exception:
-
-        # Analytics must never interrupt an interview.
+    except Exception as exc:
+        # Keep the interview usable; show details only to the authenticated admin.
+        st.session_state["analytics_last_write_error"] = f"{type(exc).__name__}: {exc}"
         return False
 
 
-def get_usage_events():
-
+def get_usage_events(limit=10000):
+    """Fetch most recent rows first; return (rows, error, truncated_possible)."""
     if not supabase_configured():
-        return []
-
+        return [], "Supabase URL/key missing in Streamlit Secrets", False
     try:
-
         response = requests.get(
             f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}",
             headers={
@@ -2038,47 +2008,32 @@ def get_usage_events():
                 "Authorization": f"Bearer {SUPABASE_KEY}",
             },
             params={
-                "select": (
-                    "timestamp_utc,visitor_id,event,"
-                    "scenario,area,level,questions,question_number"
-                ),
-                "order": "timestamp_utc.asc",
-                "limit": "10000",
+                "select": "id,timestamp_utc,visitor_id,event,interview_id,scenario,area,level,questions,question_number",
+                "order": "timestamp_utc.desc",
+                "limit": str(limit),
             },
-            timeout=8,
+            timeout=12,
         )
-
         response.raise_for_status()
-
         data = response.json()
-
-        return data if isinstance(data, list) else []
-
-    except Exception:
-
-        return []
+        if not isinstance(data, list):
+            return [], "Supabase returned an unexpected response format", False
+        return data, "", len(data) >= limit
+    except Exception as exc:
+        return [], f"{type(exc).__name__}: {exc}", False
 
 
 def track_interview_started():
-
+    # Each attempt gets a stable ID, allowing start/completion counts to be paired.
+    if not st.session_state.get("interview_id"):
+        st.session_state.interview_id = str(uuid.uuid4())
     return track_event(
         "interview_started",
-
-        scenario=(
-            st.session_state.selected_scenario
-        ),
-
-        area=(
-            st.session_state.selected_area
-        ),
-
-        level=(
-            st.session_state.selected_level
-        ),
-
-        questions=(
-            st.session_state.number_of_questions
-        ),
+        interview_id=st.session_state.interview_id,
+        scenario=st.session_state.get("selected_scenario"),
+        area=st.session_state.get("selected_area"),
+        level=st.session_state.get("selected_level"),
+        questions=st.session_state.get("number_of_questions"),
     )
 
 
@@ -2125,6 +2080,8 @@ defaults = {
 
     "usage_completed_tracked": False,
 
+    "interview_id": None,
+
     "interviewer_reaction": "",
 }
 
@@ -2141,12 +2098,9 @@ for key, value in defaults.items():
 # =========================================================
 
 if not st.session_state.usage_started_tracked:
-
-    track_event(
-        "app_opened"
-    )
-
-    st.session_state.usage_started_tracked = True
+    # Only mark the event as tracked after Supabase confirms the insert.
+    # If configuration/schema/permissions are wrong, the next rerun can retry.
+    st.session_state.usage_started_tracked = bool(track_event("app_opened"))
 
 
 # =========================================================
@@ -2542,6 +2496,8 @@ if (
 
                     st.session_state.interviewer_reaction = ""
 
+                    st.session_state.interview_id = str(uuid.uuid4())
+
                     st.session_state.interview_started = True
 
                     st.session_state.interview_completed = False
@@ -2745,6 +2701,8 @@ elif (
         st.session_state.answer_submitted = False
 
         st.session_state.interviewer_reaction = ""
+
+        st.session_state.interview_id = str(uuid.uuid4())
 
         st.session_state.interview_started = True
 
@@ -3135,11 +3093,8 @@ elif (
         )
 
         reaction_text = (
-            (ai_result or {}).get(
-                "interviewer_reaction",
-                "",
-            )
-            or evaluation["feedback"]
+            (ai_result or {}).get("interviewer_reaction", "")
+            or "Let’s examine the key technical reasoning in your answer."
         )
 
         feedback_text = (
@@ -3149,33 +3104,47 @@ elif (
             )
         )
 
-        st.html(
-            f"""
-            <div class="reaction-card">
+        st.markdown(f"### 🎯 Score: {score}/10")
+        st.markdown("**Interviewer**")
+        st.write(reaction_text)
+        st.markdown("**Evaluation**")
+        st.write(feedback_text)
 
-                <span class="score-pill">
-                    🎯 {score}/10
-                </span>
+        if ai_result:
+            technical_accuracy = str(ai_result.get("technical_accuracy", "")).strip()
+            if technical_accuracy:
+                st.markdown("**Technical accuracy**")
+                st.write(technical_accuracy)
 
-                <br><br>
+            strengths = ai_result.get("strengths", [])
+            if strengths:
+                st.markdown("**What you did well**")
+                for item in strengths:
+                    st.markdown(f"- {item}")
 
-                <b>Interviewer</b>
+            gaps = ai_result.get("areas_to_improve", [])
+            if gaps:
+                st.markdown("**Gaps to address**")
+                for item in gaps:
+                    st.markdown(f"- {item}")
 
-                <br>
+            how_to_improve = str(ai_result.get("how_to_improve", "")).strip()
+            if how_to_improve:
+                st.markdown("**How to improve this answer**")
+                st.write(how_to_improve)
 
-                {reaction_text}
-
-                <br><br>
-
-                <b>Feedback</b>
-
-                <br>
-
-                {feedback_text}
-
-            </div>
-            """
-        )
+            model_answer = str(ai_result.get("model_answer", "")).strip()
+            if model_answer:
+                with st.expander("📘 See a stronger sample answer"):
+                    st.write(model_answer)
+        else:
+            st.caption("AI evaluation was unavailable for this response. The comments below are a basic keyword-based estimate, not a full technical review.")
+            st.markdown("**Concepts detected**")
+            st.write(", ".join(evaluation.get("matched_keywords", [])) or "No expected keywords were clearly detected.")
+            st.markdown("**Potential gaps to check**")
+            st.write(", ".join(evaluation.get("missing_keywords", [])) or "The basic checker did not detect missing keywords; technical accuracy has not been verified.")
+            st.markdown("**Suggested next step**")
+            st.write(evaluation.get("improvement", "Review the core definition, methodology and assumptions."))
 
         if current_index < total_questions - 1:
 
@@ -3523,191 +3492,184 @@ elif (
 # =========================================================
 
 elif page == "Analytics":
-
-    st.html(
-        '<div class="dashboard-shell">'
-    )
-
-    st.html(
-        '<div class="section-title">Analytics</div>'
-    )
-
-    st.html(
-        '<div class="section-subtitle">Simple anonymous usage tracking for InterviewSathi.</div>'
-    )
+    st.html('<div class="dashboard-shell">')
+    st.html('<div class="section-title">Analytics</div>')
+    st.html('<div class="section-subtitle">Anonymous product usage and interview funnel.</div>')
 
     try:
-
-        admin_password = st.secrets.get(
-            "ADMIN_PASSWORD",
-            "",
-        )
-
+        admin_password = str(st.secrets.get("ADMIN_PASSWORD", ""))
     except Exception:
-
         admin_password = ""
 
-    entered_password = st.text_input(
-        "Admin password",
-        type="password",
-    )
+    entered_password = st.text_input("Admin password", type="password", key="analytics_admin_password")
 
     if not admin_password:
-
-        st.warning(
-            "Set ADMIN_PASSWORD in Streamlit Secrets to enable this page."
-        )
-
+        st.warning("Set ADMIN_PASSWORD in Streamlit Secrets to enable this page.")
     elif entered_password != admin_password:
-
-        st.info(
-            "Enter the admin password to view usage."
-        )
-
+        st.info("Enter the admin password to view usage.")
     else:
-
         if not supabase_configured():
-
-            st.error(
-                "Persistent analytics are not configured. Add SUPABASE_URL and SUPABASE_KEY to Streamlit Secrets."
-            )
-
+            st.error("Persistent analytics are not configured. Add SUPABASE_URL and SUPABASE_KEY to Streamlit Secrets.")
         else:
+            action_col1, action_col2 = st.columns([1, 2])
+            with action_col1:
+                if st.button("↻ Refresh analytics", key="refresh_analytics"):
+                    st.rerun()
+            with action_col2:
+                if st.button("Run analytics write test", key="analytics_write_test"):
+                    test_ok = track_event("analytics_test")
+                    if test_ok:
+                        st.success("Test event inserted. Refresh to confirm it can also be read.")
+                    else:
+                        st.error("Test insert failed: " + st.session_state.get("analytics_last_write_error", "Unknown error"))
+            st.caption("The write test creates an analytics_test row; it does not count as an app open or interview.")
 
-            rows = get_usage_events()
-
-            visitors = {
-                r.get("visitor_id")
-                for r in rows
-                if r.get("visitor_id")
-            }
-
-            started = [
-                r
-                for r in rows
-                if r.get("event")
-                == "interview_started"
-            ]
-
-            completed = [
-                r
-                for r in rows
-                if r.get("event")
-                == "interview_completed"
-            ]
-
-            last_activity = (
-                rows[-1].get(
-                    "timestamp_utc",
-                    "",
-                )
-                if rows
-                else "No activity yet"
-            )
-
-            m1, m2, m3, m4 = st.columns(4)
-
-            with m1:
-
-                st.metric(
-                    "Visitors",
-                    len(visitors),
-                )
-
-            with m2:
-
-                st.metric(
-                    "Interviews Started",
-                    len(started),
-                )
-
-            with m3:
-
-                st.metric(
-                    "Interviews Completed",
-                    len(completed),
-                )
-
-            with m4:
-
-                rate = (
-                    round(
-                        len(completed)
-                        / len(started)
-                        * 100,
-                        1,
-                    )
-                    if started
-                    else 0
-                )
-
-                st.metric(
-                    "Completion Rate",
-                    f"{rate}%",
-                )
-
-            st.caption(
-                f"Last activity (UTC): {last_activity}"
-            )
-
-            if started:
-
-                st.subheader(
-                    "Recent Interviews Started"
-                )
-
-                recent = []
-
-                for r in started[-10:][::-1]:
-
-                    recent.append(
-                        {
-                            "Time (UTC)": r.get(
-                                "timestamp_utc",
-                                "",
-                            ),
-
-                            "Level": r.get(
-                                "level",
-                                "",
-                            ),
-
-                            "Area": r.get(
-                                "area",
-                                "",
-                            ),
-
-                            "Interview": r.get(
-                                "scenario",
-                                "",
-                            ),
-
-                            "Questions": r.get(
-                                "questions",
-                                "",
-                            ),
-                        }
-                    )
-
-                st.dataframe(
-                    recent,
-                    use_container_width=True,
-                    hide_index=True,
-                )
-
+            rows, fetch_error, possibly_truncated = get_usage_events()
+            if fetch_error:
+                st.error(f"Could not read analytics from Supabase: {fetch_error}")
+                st.caption("Check the key, table name, column names, and SELECT permissions/RLS policy.")
             else:
+                # Normalize timestamps and remove malformed rows before calculating metrics.
+                parsed = []
+                for row in rows:
+                    try:
+                        dt = datetime.fromisoformat(str(row.get("timestamp_utc", "")).replace("Z", "+00:00"))
+                        if dt.tzinfo is None:
+                            dt = dt.replace(tzinfo=timezone.utc)
+                        row["_dt"] = dt.astimezone(timezone.utc)
+                        parsed.append(row)
+                    except Exception:
+                        continue
 
-                st.info(
-                    "No interviews have been started yet."
-                )
+                if not parsed:
+                    st.warning("Supabase returned zero readable event rows. This usually means no successful inserts yet, an incorrect table/schema, or API permissions/RLS blocking reads.")
+                    st.write("**Quick checks**")
+                    st.markdown("""
+                    1. Run the `InterviewSathi_supabase_migration.sql` script in the Supabase SQL Editor.
+                    2. In Streamlit Cloud → App → Settings → Secrets, verify `SUPABASE_URL`, `SUPABASE_KEY`, and `ADMIN_PASSWORD`.
+                    3. `SUPABASE_KEY` must be a server-side secret/service-role key for this setup; never put it in client-side code or GitHub.
+                    4. Click **Run analytics write test**, then refresh. If writing works but reading fails, check the key and SELECT permissions.
+                    """)
+                    if st.session_state.get("analytics_last_write_error"):
+                        st.error("Last write error: " + st.session_state["analytics_last_write_error"])
+                    elif st.session_state.get("analytics_last_write_ok"):
+                        st.success("Last write succeeded at " + st.session_state["analytics_last_write_ok"] + ". If the table still reads empty, check SELECT permissions/key configuration.")
+                    else:
+                        st.caption("No write attempt has succeeded in this admin session yet. The public app may have a separate session, so use the write test above.")
+                else:
+                    oldest = min(r["_dt"].date() for r in parsed)
+                    newest = max(r["_dt"].date() for r in parsed)
+                    date_cols = st.columns([1, 1, 2])
+                    with date_cols[0]:
+                        date_from = st.date_input("From (UTC)", value=max(oldest, newest.replace(day=1)), min_value=oldest, max_value=newest, key="analytics_from")
+                    with date_cols[1]:
+                        date_to = st.date_input("To (UTC)", value=newest, min_value=oldest, max_value=newest, key="analytics_to")
+                    with date_cols[2]:
+                        st.caption("Metrics use event timestamps in UTC. Sessions are not the same as unique people.")
 
-            st.caption(
-                "Tracking is anonymous; no visitor names are collected."
-            )
+                    if date_from > date_to:
+                        st.warning("The start date is after the end date. Choose a valid date range.")
+                        filtered = []
+                    else:
+                        filtered = [r for r in parsed if date_from <= r["_dt"].date() <= date_to]
 
-    st.html(
-        '</div>'
-    )
+                    def event_rows(name):
+                        return [r for r in filtered if r.get("event") == name]
+
+                    app_open_events = event_rows("app_opened")
+                    started = event_rows("interview_started")
+                    completed = event_rows("interview_completed")
+                    answered = event_rows("answer_submitted")
+                    sessions = {r.get("visitor_id") for r in app_open_events if r.get("visitor_id")}
+                    # Count distinct attempts when interview_id exists; legacy rows fall back to event rows.
+                    started_ids = {r.get("interview_id") for r in started if r.get("interview_id")}
+                    completed_ids = {r.get("interview_id") for r in completed if r.get("interview_id")}
+                    legacy_starts = sum(1 for r in started if not r.get("interview_id"))
+                    legacy_completions = sum(1 for r in completed if not r.get("interview_id"))
+                    starts_count = len(started_ids) + legacy_starts
+                    completions_count = len(completed_ids) + legacy_completions
+                    rate = (completions_count / starts_count * 100) if starts_count else None
+
+                    k1, k2, k3, k4 = st.columns(4)
+                    k1.metric("Sessions with app-open event", len(sessions))
+                    k2.metric("Interviews started", starts_count)
+                    k3.metric("Interviews completed", completions_count)
+                    k4.metric("Completion rate", f"{rate:.1f}%" if rate is not None else "N/A")
+                    st.caption(f"Selected period: {date_from} to {date_to} UTC · {len(filtered):,} events loaded")
+
+                    if possibly_truncated:
+                        st.warning("The event query reached its 10,000-row limit. Metrics may be incomplete; use a narrower date range or add paginated queries before relying on totals.")
+
+                    # Daily event counts, represented as a tidy dataframe for Streamlit charts.
+                    daily = {}
+                    for r in filtered:
+                        day = r["_dt"].date().isoformat()
+                        daily.setdefault(day, {"Date (UTC)": day, "App opens": 0, "Interviews started": 0, "Interviews completed": 0, "Answers submitted": 0})
+                        label = {"app_opened": "App opens", "interview_started": "Interviews started", "interview_completed": "Interviews completed", "answer_submitted": "Answers submitted"}.get(r.get("event"))
+                        if label:
+                            daily[day][label] += 1
+                    if daily:
+                        st.subheader("Daily activity")
+                        import pandas as pd
+                        daily_df = pd.DataFrame([daily[k] for k in sorted(daily)])
+                        st.line_chart(daily_df.set_index("Date (UTC)")[ ["App opens", "Interviews started", "Interviews completed"] ])
+                        with st.expander("View daily activity table"):
+                            st.dataframe(daily_df, use_container_width=True, hide_index=True)
+
+                    left, right = st.columns(2)
+                    with left:
+                        st.subheader("Interviews by topic")
+                        topic_counts = {}
+                        for r in started:
+                            label = r.get("area") or "Not recorded"
+                            topic_counts[label] = topic_counts.get(label, 0) + 1
+                        if topic_counts:
+                            import pandas as pd
+                            st.bar_chart(pd.DataFrame({"Interviews": topic_counts}).sort_values("Interviews", ascending=False))
+                        else:
+                            st.caption("No interview-start events in this period.")
+                    with right:
+                        st.subheader("Interviews by level")
+                        level_counts = {}
+                        for r in started:
+                            label = r.get("level") or "Not recorded"
+                            level_counts[label] = level_counts.get(label, 0) + 1
+                        if level_counts:
+                            import pandas as pd
+                            st.bar_chart(pd.DataFrame({"Interviews": level_counts}).sort_values("Interviews", ascending=False))
+                        else:
+                            st.caption("No interview-start events in this period.")
+
+                    st.subheader("Recent interview activity")
+                    recent = []
+                    for r in sorted(filtered, key=lambda x: x["_dt"], reverse=True)[:100]:
+                        recent.append({
+                            "Time (UTC)": r["_dt"].strftime("%Y-%m-%d %H:%M:%S"),
+                            "Event": r.get("event", ""),
+                            "Topic": r.get("area") or "",
+                            "Level": r.get("level") or "",
+                            "Scenario": r.get("scenario") or "",
+                            "Question #": r.get("question_number") or "",
+                            "Questions": r.get("questions") or "",
+                            "Attempt ID": (str(r.get("interview_id") or "")[:8]),
+                        })
+                    st.dataframe(recent, use_container_width=True, hide_index=True)
+
+                    with st.expander("Tracking health and interpretation"):
+                        st.write(f"**Rows loaded:** {len(parsed):,}")
+                        st.write(f"**app_opened events:** {len(app_open_events):,}")
+                        st.write(f"**answer_submitted events:** {len(answered):,}")
+                        st.write(f"**Distinct start IDs:** {len(started_ids):,}; **distinct completion IDs:** {len(completed_ids):,}")
+                        if st.session_state.get("analytics_last_write_error"):
+                            st.error("Most recent event write failed in this admin session: " + st.session_state["analytics_last_write_error"])
+                        elif st.session_state.get("analytics_last_write_ok"):
+                            st.success("Most recent event write succeeded at " + st.session_state["analytics_last_write_ok"])
+                        else:
+                            st.caption("No write test has been performed in this admin session. Open a fresh interview session to verify end-to-end writes.")
+                        st.caption("Historical events created before interview_id was added cannot be reliably deduplicated by attempt. The dashboard falls back to event-row counts where IDs are absent.")
+
+                    st.caption("Anonymous event tracking only. Session counts are based on visitor_id values that emitted app_opened during the selected period; browser restarts may create new session IDs.")
+    st.html('</div>')
 
 
 # =========================================================
