@@ -1971,6 +1971,9 @@ def track_event(event_name, **details):
     row = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "visitor_id": get_visitor_id(),
+        # Some existing Supabase tables require event_type; keep both names
+        # during schema transition so the current dashboard can still use event.
+        "event_type": str(event_name),
         "event": str(event_name),
         "interview_id": details.get("interview_id") or st.session_state.get("interview_id"),
         "scenario": details.get("scenario"),
