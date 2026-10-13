@@ -1986,10 +1986,18 @@ def track_event(event_name, **details):
             json=row,
             timeout=8,
         )
-       if not response.ok:
-    raise RuntimeError(
-        f"Supabase HTTP {response.status_code}: {response.text}"
-    )
+        if not response.ok:
+            raise RuntimeError(
+                f"Supabase HTTP {response.status_code}: {response.text}"
+            )
+
+        st.session_state["analytics_last_write_error"] = ""
+        st.session_state["analytics_last_write_ok"] = datetime.now(timezone.utc).isoformat()
+        return True
+
+    except Exception as exc:
+        st.session_state["analytics_last_write_error"] = f"{type(exc).__name__}: {exc}"
+        return False
 
 
 def get_usage_events(limit=10000):
